@@ -14,9 +14,9 @@ Projects created for learning, experimentation, and skill development.
 
 Production-ready projects for friends and customers.
 
-| Project Name | Description | Technologies | Date Added | Status | Client/Purpose |
-|--------------|-------------|--------------|------------|--------|----------------|
-| _No projects yet_ | - | - | - | - | - |
+| Project Name | Description | Technologies | Date Added | Status | Client/Purpose | Url/Address |
+|--------------|-------------|--------------|------------|--------|----------------|-------------|
+| _No projects yet_ | - | - | - | - | - | - |
 
 ---
 
