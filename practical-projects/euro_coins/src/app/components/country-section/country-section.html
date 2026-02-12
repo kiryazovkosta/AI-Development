@@ -1,0 +1,18 @@
+<section class="country-section">
+  <header class="country-header">
+    <img
+      alt="country-flag-image"
+      [src]="coinDataService.getCountryFlagUrl(country().code)"
+      [alt]="country().name + ' flag'"
+      class="country-flag" />
+    <h2 class="country-name">{{ country().name }}</h2>
+    <span class="country-progress">{{ collectedForCountry() }}/8</span>
+  </header>
+  <div class="coins-row">
+    @for (denomination of denominations(); track denomination.value) {
+      <app-coin-card
+        [countryCode]="country().code"
+        [denomination]="denomination.value" />
+    }
+  </div>
+</section>

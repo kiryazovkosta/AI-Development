@@ -1,0 +1,5 @@
+<div class="collection-grid">
+  @for (country of coinDataService.countries(); track country.id) {
+    <app-country-section [country]="country" />
+  }
+</div>

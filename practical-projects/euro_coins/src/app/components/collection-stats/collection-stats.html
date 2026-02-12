@@ -1,0 +1,20 @@
+<div class="stats-container">
+  <div class="stat-card">
+    <span class="stat-value">{{ collectionService.collectedCount() }}</span>
+    <span class="stat-label">Collected</span>
+  </div>
+  <div class="stat-card">
+    <span class="stat-value">{{ collectionService.totalCoins() }}</span>
+    <span class="stat-label">Total Coins</span>
+  </div>
+  <div class="stat-card progress-card">
+    <div class="progress-bar">
+      <div
+        class="progress-fill"
+        [style.width.%]="collectionService.collectionProgress()">
+      </div>
+    </div>
+    <span class="stat-value">{{ collectionService.collectionProgress() }}%</span>
+    <span class="stat-label">Complete</span>
+  </div>
+</div>

@@ -16,7 +16,7 @@ Production-ready projects for friends and customers.
 
 | Project Name | Description | Technologies | Date Added | Status | Client/Purpose | Url/Address |
 |--------------|-------------|--------------|------------|--------|----------------|-------------|
-| _No projects yet_ | - | - | - | - | - | - |
+| [euro-coins](./practical-projects/euro_coins) | Web application to collect euro coins | Angular + Firebase  | 2026-02-12 | Deployed | My own application | https://euro-coins.vercel.app |
 
 ---
 

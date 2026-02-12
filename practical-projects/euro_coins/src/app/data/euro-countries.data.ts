@@ -1,0 +1,40 @@
+import { Country, DenominationInfo } from '../models/coin.models';
+
+export const EURO_COUNTRIES: Country[] = [
+  { id: '1', code: 'AD', name: 'Andorra', joinYear: 2002 },
+  { id: '2', code: 'AT', name: 'Austria', joinYear: 1999 },
+  { id: '3', code: 'BE', name: 'Belgium', joinYear: 1999 },
+  { id: '4', code: 'BG', name: 'Bulgaria', joinYear: 2026 },
+  { id: '5', code: 'HR', name: 'Croatia', joinYear: 2023 },
+  { id: '6', code: 'CY', name: 'Cyprus', joinYear: 2008 },
+  { id: '7', code: 'EE', name: 'Estonia', joinYear: 2011 },
+  { id: '8', code: 'FI', name: 'Finland', joinYear: 1999 },
+  { id: '9', code: 'FR', name: 'France', joinYear: 1999 },
+  { id: '10', code: 'DE', name: 'Germany', joinYear: 1999 },
+  { id: '11', code: 'GR', name: 'Greece', joinYear: 2001 },
+  { id: '12', code: 'IE', name: 'Ireland', joinYear: 1999 },
+  { id: '13', code: 'IT', name: 'Italy', joinYear: 1999 },
+  { id: '14', code: 'LV', name: 'Latvia', joinYear: 2014 },
+  { id: '15', code: 'LT', name: 'Lithuania', joinYear: 2015 },
+  { id: '16', code: 'LU', name: 'Luxembourg', joinYear: 1999 },
+  { id: '17', code: 'MT', name: 'Malta', joinYear: 2008 },
+  { id: '18', code: 'MC', name: 'Monaco', joinYear: 2002 },
+  { id: '19', code: 'NL', name: 'Netherlands', joinYear: 1999 },
+  { id: '20', code: 'PT', name: 'Portugal', joinYear: 1999 },
+  { id: '21', code: 'SM', name: 'San Marino', joinYear: 2002 },
+  { id: '22', code: 'SK', name: 'Slovakia', joinYear: 2009 },
+  { id: '23', code: 'SI', name: 'Slovenia', joinYear: 2007 },
+  { id: '24', code: 'ES', name: 'Spain', joinYear: 1999 },
+  { id: '25', code: 'VA', name: 'Vatican City', joinYear: 2002 },
+];
+
+export const DENOMINATIONS: DenominationInfo[] = [
+  { id: '1', value: '1c', label: '1 cent', sortOrder: 1, valueInCents: 1 },
+  { id: '2', value: '2c', label: '2 cents', sortOrder: 2, valueInCents: 2 },
+  { id: '3', value: '5c', label: '5 cents', sortOrder: 3, valueInCents: 5 },
+  { id: '4', value: '10c', label: '10 cents', sortOrder: 4, valueInCents: 10 },
+  { id: '5', value: '20c', label: '20 cents', sortOrder: 5, valueInCents: 20 },
+  { id: '6', value: '50c', label: '50 cents', sortOrder: 6, valueInCents: 50 },
+  { id: '7', value: '1e', label: '1 euro', sortOrder: 7, valueInCents: 100 },
+  { id: '8', value: '2e', label: '2 euros', sortOrder: 8, valueInCents: 200 },
+];

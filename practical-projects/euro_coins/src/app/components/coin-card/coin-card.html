@@ -1,0 +1,18 @@
+<div class="coin-card" [class.owned]="isOwned()">
+  <div class="coin-image-container">
+    <img
+      [src]="imageUrl()"
+      [alt]="altText()"
+      class="coin-image"
+      loading="lazy"
+      (error)="onImageError($event)"
+      alt="coin-image" />
+  </div>
+  <label class="coin-label">
+    <input
+      type="checkbox"
+      [checked]="isOwned()"
+      (change)="onToggle()" />
+    <span class="denomination-text">{{ denominationLabel() }}</span>
+  </label>
+</div>

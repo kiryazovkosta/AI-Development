@@ -41,6 +41,7 @@ ENV/
 env.bak/
 venv.bak/
 
+
 # JavaScript/Node
 node_modules/
 npm-debug.log*
@@ -133,3 +134,7 @@ poetry.lock
 *.bak
 *.backup
 *.old
+
+#Custom files and directories
+.vercel/
+environments/
