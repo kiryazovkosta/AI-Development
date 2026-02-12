@@ -8,7 +8,7 @@ Projects created for learning, experimentation, and skill development.
 
 | Project Name | Description | Technologies | Date Added | Status |
 |--------------|-------------|--------------|------------|--------|
-| [a-image-manager](./learning-projects/a-image-manager) | Minimal Angular 21 + .NET 10 starter for an image manager | Angular 21, .NET 10, C# | 2026-02-08 | 🚧 In Development |
+| [ai-image-transformation](./learning-projects/ai-image-transformations) | Desktop application for an image transformations | .Net MAUI, .NET 10, C# | 2026-02-12 | 🚧 In Development |
 
 ## 🏗️ Practical Projects
 
