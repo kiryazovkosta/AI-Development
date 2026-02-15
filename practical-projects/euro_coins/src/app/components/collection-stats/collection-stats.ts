@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { CollectionService } from '../../services/collection.service';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-collection-stats',
@@ -9,4 +10,9 @@ import { CollectionService } from '../../services/collection.service';
 })
 export class CollectionStatsComponent {
   protected readonly collectionService = inject(CollectionService);
+  private readonly router = inject(Router);
+
+  onCountrySelect(country: string) {
+    this.router.navigate([], { fragment: country });
+  }
 }

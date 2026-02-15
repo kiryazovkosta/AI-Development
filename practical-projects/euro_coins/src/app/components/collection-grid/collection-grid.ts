@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CoinDataService } from '../../services/coin-data.service';
 import { CountrySectionComponent } from '../country-section/country-section';
+import { RouterLink } from "@angular/router";
 
 @Component({
   selector: 'app-collection-grid',

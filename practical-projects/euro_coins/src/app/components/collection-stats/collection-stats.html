@@ -1,10 +1,18 @@
 <div class="stats-container">
+  <div class="stat-card select-card">
+    <select name="navigate-to-country" id="navigate-to-country" 
+      title="navigate-to-country" (change)="onCountrySelect($any($event.target).value)">
+      @for (name of this.collectionService.countriesNames(); track $index) {
+      <option value="{{name}}">{{name}}</option>
+      }
+    </select>
+  </div>  
   <div class="stat-card">
     <span class="stat-value">{{ collectionService.collectedCount() }}</span>
     <span class="stat-label">Collected</span>
   </div>
   <div class="stat-card">
-    <span class="stat-value">{{ collectionService.totalCoins() }}</span>
+    <span class="stat-value">{{ collectionService.totalCoins() }}</span>  
     <span class="stat-label">Total Coins</span>
   </div>
   <div class="stat-card progress-card">

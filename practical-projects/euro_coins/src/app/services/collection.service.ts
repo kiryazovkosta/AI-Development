@@ -46,6 +46,8 @@ export class CollectionService {
     }));
   });
 
+  readonly countriesNames = computed(() => this.coinDataService.countries().map(c => c.name));
+
   constructor() {
     effect(() => {
       const user = this.authService.currentUser();
