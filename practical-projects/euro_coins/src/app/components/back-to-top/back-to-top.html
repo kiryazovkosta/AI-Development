@@ -1,0 +1,10 @@
+<button
+  #backToTopButton
+  class="back-to-top"
+  [class.visible]="isVisible()"
+  [class.pulse]="isPulse()"
+  (click)="scrollToTop()"
+  (keydown)="onKeyDown($event)"
+  aria-label="Scroll to top of page">
+  Top
+</button>

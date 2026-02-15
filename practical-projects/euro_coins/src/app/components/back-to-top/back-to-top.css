@@ -1,0 +1,46 @@
+.back-to-top {
+  position: fixed;
+  bottom: var(--spacing-lg);
+  right: var(--spacing-lg);
+  padding: var(--spacing-md);
+  background: var(--color-primary);
+  color: var(--color-surface);
+  border: none;
+  border-radius: var(--radius-lg);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px);
+  transition: opacity var(--transition-normal), visibility var(--transition-normal), transform var(--transition-normal);
+  z-index: 1000;
+}
+
+.back-to-top.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.back-to-top.pulse {
+  animation: pulse 2s ease-in-out;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.back-to-top:hover {
+  background: color-mix(in srgb, var(--color-primary), white 30%);
+}
+
+.back-to-top:focus-visible {
+  outline: 2px solid var(--color-focus, var(--color-primary));
+  outline-offset: 2px;
+}
