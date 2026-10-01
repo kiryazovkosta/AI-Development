@@ -1,19 +1,22 @@
 import { Injectable, inject } from '@angular/core';
 import { Country, DenominationInfo, Denomination } from '../models/coin.models';
 import { EURO_COUNTRIES, DENOMINATIONS } from '../data/euro-countries.data';
-import { collection, collectionData, CollectionReference, Firestore } from '@angular/fire/firestore';
+import { SupabaseService } from './supabase.service';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { catchError, map, of, tap } from 'rxjs';
+import { catchError, from, map, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CoinDataService {
-  private readonly firestore = inject(Firestore);
-  private readonly countriesCollection = collection(this.firestore, 'countries') as CollectionReference<Country>;
-  private readonly denominationsCollection = collection(this.firestore, 'denomination-info') as CollectionReference<DenominationInfo>;
+  private readonly supabase = inject(SupabaseService).client;
   readonly countries = toSignal(
-    collectionData(this.countriesCollection, { idField: 'id' }).pipe(
+    from(this.supabase.from('countries').select('id, code, name, joinYear:join_year')).pipe(
+      map(({ data, error }) => {
+        if (error) throw error;
+        // Tables start empty; fall back to the bundled data until they are seeded
+        return data?.length ? (data as Country[]) : EURO_COUNTRIES;
+      }),
       map(countries => [...countries].sort((a, b) => a.name.localeCompare(b.name))),
       catchError((err) => {
         return of(EURO_COUNTRIES);
@@ -22,7 +25,15 @@ export class CoinDataService {
     { initialValue: EURO_COUNTRIES }
   );
   readonly denominations = toSignal(
-    collectionData(this.denominationsCollection, { idField: 'id' }).pipe(
+    from(
+      this.supabase
+        .from('denomination_info')
+        .select('id, value, label, sortOrder:sort_order, valueInCents:value_in_cents')
+    ).pipe(
+      map(({ data, error }) => {
+        if (error) throw error;
+        return data?.length ? (data as DenominationInfo[]) : DENOMINATIONS;
+      }),
       map(denoms => [...denoms].sort((a, b) => a.sortOrder - b.sortOrder)),
       catchError((err) => {
         return of(DENOMINATIONS);

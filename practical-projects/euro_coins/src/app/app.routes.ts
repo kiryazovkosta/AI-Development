@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './guards/auth.guard';
 import { guestGuard } from './guards/guest.guard';
+import { adminGuard } from './guards/admin.guard';
 
 export const routes: Routes = [
   {
@@ -9,10 +10,10 @@ export const routes: Routes = [
     canActivate: [guestGuard],
   },
   {
-    path: 'register',
+    path: 'users/new',
     loadComponent: () =>
       import('./components/register/register').then((m) => m.RegisterComponent),
-    canActivate: [guestGuard],
+    canActivate: [authGuard, adminGuard],
   },
   {
     path: 'collection',

@@ -1,17 +1,16 @@
 import { CoinDataService } from './coin-data.service';
-import { Injectable, signal, computed, inject, effect, EnvironmentInjector, runInInjectionContext } from '@angular/core';
+import { Injectable, signal, computed, inject, effect } from '@angular/core';
 import { Denomination } from '../models/coin.models';
 import { generateCoinId } from '../utils/coin.utils';
 import { AuthService } from './auth.service';
-import { Firestore, doc, getDoc, setDoc, Unsubscribe } from '@angular/fire/firestore';
+import { SupabaseService } from './supabase.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CollectionService {
-  private readonly firestore = inject(Firestore);
+  private readonly supabase = inject(SupabaseService).client;
   private readonly authService = inject(AuthService);
-  private readonly injector = inject(EnvironmentInjector);
 
   readonly coinDataService = inject(CoinDataService);
   private countries = computed(() => this.coinDataService.countries());
@@ -20,8 +19,8 @@ export class CollectionService {
   private readonly ownedCoinsSet = signal<Set<string>>(new Set());
   private readonly syncingSignal = signal<boolean>(false);
 
-  private firestoreUnsubscribe: Unsubscribe | null = null;
-  private isLoadingFromFirestore = signal<boolean>(false);
+  private remoteUnsubscribe: (() => void) | null = null;
+  private isLoadingRemote = signal<boolean>(false);
 
   readonly ownedCoins = computed(() => Array.from(this.ownedCoinsSet()));
 
@@ -61,8 +60,8 @@ export class CollectionService {
     effect((onCleanup) => {
       const coins = this.ownedCoinsSet();
       const user = this.authService.currentUser();
-      if (!this.isLoadingFromFirestore() && user) {
-        const timeout = setTimeout(() => this.saveToFirestore(coins, user.uid), 500);
+      if (!this.isLoadingRemote() && user) {
+        const timeout = setTimeout(() => this.saveCollection(coins, user.uid), 500);
         onCleanup(() => clearTimeout(timeout));
       }
     });
@@ -104,55 +103,51 @@ export class CollectionService {
 
   private async onUserLogin(uid: string): Promise<void> {
     this.syncingSignal.set(true);
-    this.isLoadingFromFirestore.set(true);
-    this.unsubscribeFirestore();
+    this.isLoadingRemote.set(true);
+    this.unsubscribeRemote();
 
     try {
-      const userDocRef = runInInjectionContext(this.injector, () =>
-        doc(this.firestore, 'owned-coins', uid)
-      );
-      const snapshot = await runInInjectionContext(this.injector, () =>
-        getDoc(userDocRef)
-      );
+      const { data, error } = await this.supabase
+        .from('owned_coins')
+        .select('owned_coins')
+        .eq('user_id', uid)
+        .maybeSingle();
+      if (error) throw error;
 
-      if (snapshot.exists()) {
-        const data = snapshot.data() as { ownedCoins?: string[] };
-        this.ownedCoinsSet.set(new Set(data['ownedCoins'] ?? []));
+      if (data) {
+        this.ownedCoinsSet.set(new Set((data.owned_coins as string[] | null) ?? []));
       }
     } catch (error) {
-      console.error('Failed to sync collection with Firestore:', error);
+      console.error('Failed to sync collection with Supabase:', error);
     } finally {
-      this.isLoadingFromFirestore.set(false);
+      this.isLoadingRemote.set(false);
       this.syncingSignal.set(false);
     }
   }
   
   private onUserLogout(): void {
-    this.unsubscribeFirestore();
+    this.unsubscribeRemote();
     this.ownedCoinsSet.set(new Set());
   }
-  
-  private unsubscribeFirestore(): void {
-    if (this.firestoreUnsubscribe) {
-      this.firestoreUnsubscribe();
-      this.firestoreUnsubscribe = null;
+
+  private unsubscribeRemote(): void {
+    if (this.remoteUnsubscribe) {
+      this.remoteUnsubscribe();
+      this.remoteUnsubscribe = null;
     }
   }
-  
-  private async saveToFirestore(coins: Set<string>, uid: string): Promise<void> {
+
+  private async saveCollection(coins: Set<string>, uid: string): Promise<void> {
     try {
       this.syncingSignal.set(true);
-      const userDocRef = runInInjectionContext(this.injector, () =>
-        doc(this.firestore, 'owned-coins', uid)
-      );
-      await runInInjectionContext(this.injector, () =>
-        setDoc(userDocRef, {
-          ownedCoins: Array.from(coins),
-          lastUpdated: new Date(),
-        })
-      );
+      const { error } = await this.supabase.from('owned_coins').upsert({
+        user_id: uid,
+        owned_coins: Array.from(coins),
+        last_updated: new Date().toISOString(),
+      });
+      if (error) throw error;
     } catch (error) {
-      console.error('Failed to save collection to Firestore:', error);
+      console.error('Failed to save collection to Supabase:', error);
     } finally {
       this.syncingSignal.set(false);
     }

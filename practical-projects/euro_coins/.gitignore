@@ -37,7 +37,7 @@ yarn-error.log
 testem.log
 /typings
 
-# Firebase environment secrets
+# Supabase environment config
 src/environments/environment.ts
 src/environments/environment.prod.ts
 

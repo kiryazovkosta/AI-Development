@@ -6,7 +6,12 @@
     </div>
     @if (authService.isAuthenticated()) {
       <div class="header-user">
-        <span class="user-email">{{ authService.currentUser()?.email }}</span>
+        <span class="user-email">
+          {{ authService.displayName() ?? authService.currentUser()?.email }}
+        </span>
+        @if (authService.isAdmin()) {
+          <a class="btn-header-link" routerLink="/users/new">Create user</a>
+        }
         <button class="btn-logout" (click)="onLogout()">Sign Out</button>
       </div>
     }

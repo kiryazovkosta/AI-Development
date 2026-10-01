@@ -1,8 +1,11 @@
 <div class="auth-container">
   <div class="auth-card">
-    <h1>Create Account</h1>
-    <p class="auth-subtitle">Start tracking your Euro Coin Collection</p>
+    <h1>Create User</h1>
+    <p class="auth-subtitle">Add a new member to the Euro Coin Collection</p>
 
+    @if (successMessage()) {
+      <div class="success-message">{{ successMessage() }}</div>
+    }
     @if (localError()) {
       <div class="error-message">{{ localError() }}</div>
     }
@@ -20,7 +23,29 @@
           (ngModelChange)="email.set($event)"
           name="email"
           required
-          placeholder="your@email.com" />
+          autocomplete="off"
+          placeholder="user@email.com" />
+      </div>
+      <div class="form-group">
+        <label for="displayName">Display name</label>
+        <input
+          id="displayName"
+          type="text"
+          [ngModel]="displayName()"
+          (ngModelChange)="displayName.set($event)"
+          name="displayName"
+          required
+          placeholder="Full name" />
+      </div>
+      <div class="form-group">
+        <label for="phone">Phone (optional)</label>
+        <input
+          id="phone"
+          type="tel"
+          [ngModel]="phone()"
+          (ngModelChange)="phone.set($event)"
+          name="phone"
+          placeholder="+359 888 123 456" />
       </div>
       <div class="form-group">
         <label for="password">Password</label>
@@ -31,6 +56,7 @@
           (ngModelChange)="password.set($event)"
           name="password"
           required
+          autocomplete="new-password"
           placeholder="At least 6 characters" />
       </div>
       <div class="form-group">
@@ -42,19 +68,20 @@
           (ngModelChange)="confirmPassword.set($event)"
           name="confirmPassword"
           required
+          autocomplete="new-password"
           placeholder="Re-enter password" />
       </div>
-      <button type="submit" class="btn-primary" [disabled]="isLoading()">
-        @if (isLoading()) {
-          Creating account...
+      <button type="submit" class="btn-primary" [disabled]="isSubmitting()">
+        @if (isSubmitting()) {
+          Creating user...
         } @else {
-          Create Account
+          Create User
         }
       </button>
     </form>
 
     <p class="auth-link">
-      Already have an account? <a routerLink="/login">Sign in</a>
+      <a routerLink="/collection">← Back to collection</a>
     </p>
   </div>
 </div>
