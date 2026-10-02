@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 
+using AiImageTransformations.Services;
 using AiImageTransformations.ViewModels;
 
 namespace AiImageTransformations;
@@ -17,6 +18,7 @@ public static class MauiProgram
 				fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
 			});
 
+		builder.Services.AddSingleton<IImageTransformationService, ImageTransformationService>();
 		builder.Services.AddSingleton<MainViewModel>();
 		builder.Services.AddTransient<MainPage>();
 		builder.Services.AddSingleton<AppShell>();

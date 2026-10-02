@@ -6,7 +6,7 @@
     x:Class="AiImageTransformations.MainPage"
     x:DataType="vm:MainViewModel">
 
-    <Grid RowDefinitions="Auto,Auto,*" Padding="24" RowSpacing="16">
+    <Grid RowDefinitions="Auto,Auto,*,Auto" Padding="24" RowSpacing="16">
         <Label
             Grid.Row="0"
             Text="{Binding Title}"
@@ -15,11 +15,34 @@
             HorizontalOptions="Center"
             SemanticProperties.HeadingLevel="Level1" />
 
-        <Button
+        <Grid
             Grid.Row="1"
-            Text="Upload"
-            Command="{Binding PickImageCommand}"
-            HorizontalOptions="Center" />
+            ColumnDefinitions="*,Auto"
+            HorizontalOptions="Fill">
+            <HorizontalStackLayout
+                Grid.Column="0"
+                Spacing="12"
+                HorizontalOptions="Start">
+                <Button
+                    Text="Upload"
+                    Command="{Binding PickImageCommand}"
+                    IsEnabled="{Binding CanPickImage}" />
+
+                <Button
+                    Text="Turn to Grayscale"
+                    Command="{Binding ApplyGrayscaleCommand}"
+                    IsVisible="{Binding HasImage}"
+                    IsEnabled="{Binding CanApplyGrayscale}" />
+            </HorizontalStackLayout>
+
+            <Button
+                Grid.Column="1"
+                Text="Restore"
+                Command="{Binding RestoreCommand}"
+                IsVisible="{Binding HasImage}"
+                IsEnabled="{Binding CanRestore}"
+                HorizontalOptions="End" />
+        </Grid>
 
         <Border
             Grid.Row="2"
@@ -33,14 +56,38 @@
                 <Image
                     Source="{Binding SelectedImage}"
                     IsVisible="{Binding HasImage}"
-                    Aspect="AspectFit" />
+                    Aspect="Fill"
+                    HorizontalOptions="Fill"
+                    VerticalOptions="Fill" />
 
                 <Label
                     Text="Select an image to begin"
                     IsVisible="{Binding HasNoImage}"
                     HorizontalOptions="Center"
                     VerticalOptions="Center" />
+
+                <ActivityIndicator
+                    IsRunning="{Binding IsBusy}"
+                    IsVisible="{Binding IsBusy}"
+                    Color="{AppThemeBinding Light=Blue, Dark=LightBlue}"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center" />
             </Grid>
+        </Border>
+
+        <Border
+            Grid.Row="3"
+            Stroke="{AppThemeBinding Light=LightGray, Dark=Gray}"
+            StrokeThickness="1"
+            StrokeShape="RoundRectangle 6"
+            Padding="12,8"
+            Background="{AppThemeBinding Light=#F5F5F5, Dark=#2D2D2D}">
+            <Label
+                Text="{Binding StatusMessage}"
+                FontSize="14"
+                TextColor="{AppThemeBinding Light=DimGray, Dark=LightGray}"
+                HorizontalOptions="Start"
+                VerticalOptions="Center" />
         </Border>
     </Grid>
 

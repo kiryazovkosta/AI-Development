@@ -57,9 +57,11 @@
   - If needed: `dotnet workload install maui`
 - Build:
   - `dotnet build`
+- If previous Build failed with error
+  - `dotnet build -v diagnostic`
 - Run (platform examples):
-  - `dotnet build -t:Run -f net8.0-windows10.0.19041.0`
-  - `dotnet build -t:Run -f net8.0-android`
+  - `dotnet build -t:Run -f net10.0-windows10.0.19041.0`
+  - `dotnet build -t:Run -f net10.0-android`
 
 ## Dependencies & imaging approach
 - Prefer built-in APIs when sufficient:
