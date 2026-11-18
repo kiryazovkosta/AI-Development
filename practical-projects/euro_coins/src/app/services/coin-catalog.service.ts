@@ -50,6 +50,8 @@ export class CoinCatalogService {
     return map;
   });
 
+  readonly coins = computed(() => this.catalog()?.coins ?? []);
+
   /** The coin shown in the details dialog, or null when it is closed */
   readonly selected = this.selectedSignal.asReadonly();
 

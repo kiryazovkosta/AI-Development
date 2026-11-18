@@ -53,6 +53,14 @@
   box-shadow: 0 0 0 2px var(--color-surface);
 }
 
+.series-badge.some {
+  background: #e8a317;
+}
+
+.series-badge.all {
+  background: var(--color-success);
+}
+
 .zoom-hint {
   position: absolute;
   bottom: -2px;

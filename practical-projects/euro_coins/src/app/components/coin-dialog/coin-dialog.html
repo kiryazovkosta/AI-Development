@@ -49,6 +49,9 @@
                   [attr.aria-pressed]="i === selectedIndex()"
                   (click)="select(i)">
                   <img [src]="s.thumb" alt="" width="56" height="56" />
+                  @if (isSeriesOwned(s.seriesNo)) {
+                    <span class="owned-mark" aria-label="owned">✓</span>
+                  }
                   <span class="series-years">{{ s.years }}</span>
                 </button>
               }
@@ -71,10 +74,24 @@
             <p class="series-years-text">{{ current.years.replace('present', 'today') }}</p>
           }
 
-          <label class="owned-toggle" [class.owned]="isOwned()">
-            <input type="checkbox" [checked]="isOwned()" (change)="toggleOwned()" />
-            <span>{{ isOwned() ? 'In my collection' : 'Add to my collection' }}</span>
+          <label class="owned-toggle" [class.owned]="isCurrentSeriesOwned()">
+            <input type="checkbox" [checked]="isCurrentSeriesOwned()" (change)="toggleOwned()" />
+            <span>
+              @if (hasManySeries()) {
+                {{ isCurrentSeriesOwned() ? 'This series is in my collection' : 'Add this series' }}
+              } @else {
+                {{ isCurrentSeriesOwned() ? 'In my collection' : 'Add to my collection' }}
+              }
+            </span>
           </label>
+          @if (hasManySeries()) {
+            <p class="series-summary">
+              {{ ownedSeriesCount() }} of {{ series().length }} series owned
+              @if (isOwned() && ownedSeriesCount() === 0) {
+                · marked as owned before series were tracked, choose the series you have
+              }
+            </p>
+          }
 
           @if (coin.details.length) {
             <dl class="details">

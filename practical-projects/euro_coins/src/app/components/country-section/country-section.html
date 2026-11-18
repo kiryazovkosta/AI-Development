@@ -6,7 +6,14 @@
       [alt]="country().name + ' flag'"
       class="country-flag" />
     <h2 class="country-name">{{ country().name }}</h2>
-    <span class="country-progress">{{ collectedForCountry() }}/8</span>
+    <span class="country-progress">
+      {{ collectedForCountry() }}/{{ denominations().length }}
+      @if (seriesProgress().total > denominations().length) {
+        <span class="series-progress" title="All series">
+          · {{ seriesProgress().collected }}/{{ seriesProgress().total }} series
+        </span>
+      }
+    </span>
   </header>
   <div class="coins-row">
     @for (denomination of denominations(); track denomination.value) {

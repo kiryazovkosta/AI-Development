@@ -14,8 +14,12 @@
       loading="lazy"
       (error)="onImageError($event)" />
     @if (seriesCount() > 1) {
-      <span class="series-badge" [attr.aria-label]="seriesCount() + ' series'">
-        {{ seriesCount() }}
+      <span
+        class="series-badge"
+        [class.some]="ownedSeries() > 0"
+        [class.all]="ownedSeries() === seriesCount()"
+        [attr.aria-label]="ownedSeries() + ' of ' + seriesCount() + ' series owned'">
+        {{ ownedSeries() }}/{{ seriesCount() }}
       </span>
     }
     <span class="zoom-hint" aria-hidden="true">
@@ -26,7 +30,10 @@
     <input
       type="checkbox"
       [checked]="isOwned()"
-      (change)="onToggle()" />
+      [indeterminate]="hasManySeries() && hasAnySeries() && !isOwned()"
+      [attr.aria-label]="hasManySeries() ? 'Choose series of ' + altText() : null"
+      [title]="hasManySeries() ? 'Choose the series you own' : ''"
+      (click)="onToggle($event)" />
     <span class="denomination-text">{{ denominationLabel() }}</span>
   </label>
 </div>

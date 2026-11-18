@@ -21,11 +21,10 @@
 
 .coin-dialog::backdrop {
   background: rgba(10, 30, 40, 0.6);
-  backdrop-filter: blur(2px);
 }
 
 @keyframes dialog-in {
-  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  from { opacity: 0; }
 }
 
 .dialog-body {
@@ -69,11 +68,6 @@
   cursor: pointer;
 }
 
-.close-button:hover {
-  background: var(--color-background);
-  color: var(--color-text);
-}
-
 .dialog-content {
   display: grid;
   grid-template-columns: minmax(0, 540px) minmax(0, 1fr);
@@ -93,10 +87,6 @@
   aspect-ratio: 1;
   border-radius: var(--radius-md);
   background: #fff;
-}
-
-.image-frame.loading {
-  background: radial-gradient(circle, var(--color-background) 45%, #fff 46%);
 }
 
 .coin-full {
@@ -133,6 +123,7 @@
 }
 
 .series-thumb {
+  position: relative;
   flex: 0 0 auto;
   display: flex;
   flex-direction: column;
@@ -144,6 +135,19 @@
   background: var(--color-background);
   cursor: pointer;
   font: inherit;
+}
+
+.owned-mark {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--color-success);
+  color: #fff;
+  font-size: 0.6875rem;
+  line-height: 18px;
 }
 
 .series-thumb img {
@@ -165,7 +169,6 @@
 .series-years {
   font-size: 0.75rem;
   color: var(--color-text-muted);
-  white-space: nowrap;
 }
 
 .series-thumb.active .series-years {
@@ -216,6 +219,12 @@
   border-color: var(--color-success);
   background: rgba(40, 167, 69, 0.08);
   color: #1e7e34;
+}
+
+.info .series-summary {
+  margin-top: calc(-1 * var(--spacing-sm));
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
 }
 
 .owned-toggle input {
