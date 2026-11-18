@@ -102,9 +102,33 @@ export class CoinDialogComponent {
     if (event.target === this.dialog().nativeElement) this.close();
   }
 
+  protected readonly ownedSeriesCount = computed(() => {
+    const coin = this.coin();
+    return coin ? this.collectionService.countOwnedSeries(coin.countryCode, coin.denomination) : 0;
+  });
+
+  protected readonly isCurrentSeriesOwned = computed(() => {
+    const coin = this.coin();
+    const current = this.current();
+    return coin && current
+      ? this.collectionService.hasSeries(coin.countryCode, coin.denomination, current.seriesNo)
+      : false;
+  });
+
+  protected isSeriesOwned(seriesNo: number): boolean {
+    const coin = this.coin();
+    return coin
+      ? this.collectionService.hasSeries(coin.countryCode, coin.denomination, seriesNo)
+      : false;
+  }
+
+  /** Single-series coins toggle the coin; otherwise the series currently shown */
   protected toggleOwned(): void {
     const coin = this.coin();
-    if (coin) this.collectionService.toggleCoin(coin.countryCode, coin.denomination);
+    const current = this.current();
+    if (coin && current) {
+      this.collectionService.toggleSeries(coin.countryCode, coin.denomination, current.seriesNo);
+    }
   }
 
   /** Runs for the close button and for Esc (the dialog's own "close" event) */

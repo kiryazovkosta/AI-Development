@@ -34,6 +34,11 @@
   font-weight: 500;
 }
 
+.series-progress {
+  margin-left: var(--spacing-xs);
+  color: var(--color-primary);
+}
+
 .coins-row {
   display: grid;
   grid-template-columns: repeat(8, 1fr);

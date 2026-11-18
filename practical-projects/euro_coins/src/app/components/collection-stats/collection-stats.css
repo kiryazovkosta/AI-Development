@@ -59,7 +59,23 @@
 }
 
 .progress-card {
-  min-width: 200px;
+  min-width: 220px;
+}
+
+.stat-total {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.progress-card .stat-label {
+  margin: 0 0 var(--spacing-sm);
+}
+
+.stat-percent {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-success);
 }
 
 .progress-bar {
