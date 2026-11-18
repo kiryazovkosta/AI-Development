@@ -1,0 +1,109 @@
+<dialog
+  #dialog
+  class="coin-dialog"
+  aria-labelledby="coin-dialog-title"
+  (close)="close()"
+  (click)="onBackdropClick($event)"
+  (keydown)="onKeydown($event)">
+  @if (coin(); as coin) {
+    <div class="dialog-body">
+      <header class="dialog-header">
+        @if (flagUrl()) {
+          <img class="flag" [src]="flagUrl()" alt="" width="32" height="24" />
+        }
+        <h2 id="coin-dialog-title">
+          {{ country()?.name ?? coin.countryCode }}
+          <span class="denomination">· {{ denominationLabel() }}</span>
+        </h2>
+        <button type="button" class="close-button" (click)="close()" aria-label="Close">
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+        </button>
+      </header>
+
+      <div class="dialog-content">
+        <section class="viewer" aria-label="Coin image">
+          <div class="image-frame" [class.loading]="!imageLoaded()">
+            @if (current(); as current) {
+              <img
+                class="coin-full"
+                [src]="current.image"
+                [alt]="(country()?.name ?? coin.countryCode) + ' ' + denominationLabel() + ', ' + current.design + ' (' + current.years + ')'"
+                width="540"
+                height="540"
+                (load)="imageLoaded.set(true)"
+                (error)="imageLoaded.set(true)" />
+            }
+            @if (hasManySeries()) {
+              <button type="button" class="nav prev" (click)="select(selectedIndex() - 1)" aria-label="Previous series">‹</button>
+              <button type="button" class="nav next" (click)="select(selectedIndex() + 1)" aria-label="Next series">›</button>
+            }
+          </div>
+
+          @if (hasManySeries()) {
+            <div class="series-strip" role="group" aria-label="Series">
+              @for (s of series(); track s.seriesNo; let i = $index) {
+                <button
+                  type="button"
+                  class="series-thumb"
+                  [class.active]="i === selectedIndex()"
+                  [attr.aria-pressed]="i === selectedIndex()"
+                  (click)="select(i)">
+                  <img [src]="s.thumb" alt="" width="56" height="56" />
+                  <span class="series-years">{{ s.years }}</span>
+                </button>
+              }
+            </div>
+          }
+        </section>
+
+        <section class="info">
+          @if (current(); as current) {
+            <p class="series-label">
+              @if (hasManySeries()) {
+                Series {{ current.seriesNo }} of {{ series().length }}
+              } @else {
+                Single series
+              }
+            </p>
+            @if (hasManySeries() || current.design !== 'Single series') {
+              <p class="series-design">{{ current.design }}</p>
+            }
+            <p class="series-years-text">{{ current.years.replace('present', 'today') }}</p>
+          }
+
+          <label class="owned-toggle" [class.owned]="isOwned()">
+            <input type="checkbox" [checked]="isOwned()" (change)="toggleOwned()" />
+            <span>{{ isOwned() ? 'In my collection' : 'Add to my collection' }}</span>
+          </label>
+
+          @if (coin.details.length) {
+            <dl class="details">
+              @for (d of coin.details; track d.label) {
+                <dt>{{ d.label }}</dt>
+                <dd>{{ d.value }}</dd>
+              }
+            </dl>
+          }
+
+          @if (coin.description) {
+            <h3>Design</h3>
+            @for (p of paragraphs(coin.description); track $index) {
+              <p>{{ p }}</p>
+            }
+          }
+
+          @if (issuerDescription()) {
+            <details class="issuer" [open]="!coin.description">
+              <summary>About the issuer</summary>
+              @for (p of paragraphs(issuerDescription()); track $index) {
+                <p>{{ p }}</p>
+              }
+            </details>
+          }
+
+          <p class="source">Images and text: European Central Bank</p>
+        </section>
+      </div>
+    </div>
+  }
+</dialog>

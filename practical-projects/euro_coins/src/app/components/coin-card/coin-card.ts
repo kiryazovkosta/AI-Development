@@ -1,5 +1,6 @@
 import { Component, inject, input, computed } from '@angular/core';
 import { Denomination } from '../../models/coin.models';
+import { CoinCatalogService } from '../../services/coin-catalog.service';
 import { CoinDataService } from '../../services/coin-data.service';
 import { CollectionService } from '../../services/collection.service';
 
@@ -11,21 +12,25 @@ import { CollectionService } from '../../services/collection.service';
 })
 export class CoinCardComponent {
   readonly countryCode = input.required<string>();
+  readonly countryName = input<string>('');
   readonly denomination = input.required<Denomination>();
 
   private readonly coinDataService = inject(CoinDataService);
+  private readonly catalogService = inject(CoinCatalogService);
   private readonly collectionService = inject(CollectionService);
 
   protected readonly isOwned = computed(() =>
     this.collectionService.hasCoin(this.countryCode(), this.denomination())
   );
 
-  protected readonly imageUrl = computed(() =>
-    this.coinDataService.getCoinImageUrl(this.countryCode(), this.denomination())
+  protected readonly seriesCount = computed(
+    () => this.catalogService.getCoin(this.countryCode(), this.denomination())?.series.length ?? 0
   );
 
-  protected readonly altText = computed(() =>
-    `${this.countryCode()} ${this.denomination()} coin`
+  protected readonly imageUrl = computed(
+    () =>
+      this.catalogService.getLatestSeries(this.countryCode(), this.denomination())?.thumb ??
+      this.coinDataService.getPlaceholderImageUrl()
   );
 
   protected readonly denominationLabel = computed(() => {
@@ -33,11 +38,21 @@ export class CoinCardComponent {
     return info?.label ?? this.denomination();
   });
 
+  protected readonly altText = computed(
+    () => `${this.countryName() || this.countryCode()} ${this.denominationLabel()} coin`
+  );
+
   protected onToggle(): void {
     this.collectionService.toggleCoin(this.countryCode(), this.denomination());
   }
 
+  protected onOpen(): void {
+    this.catalogService.open(this.countryCode(), this.denomination());
+  }
+
   protected onImageError(event: Event): void {
-    (event.target as HTMLImageElement).src = 'assets/coins/placeholder.svg';
+    const img = event.target as HTMLImageElement;
+    const placeholder = this.coinDataService.getPlaceholderImageUrl();
+    if (!img.src.endsWith(placeholder)) img.src = placeholder;
   }
 }
