@@ -19,8 +19,18 @@ export class CoinCardComponent {
   private readonly catalogService = inject(CoinCatalogService);
   private readonly collectionService = inject(CollectionService);
 
-  protected readonly isOwned = computed(() =>
+  protected readonly hasManySeries = computed(() => this.seriesCount() > 1);
+
+  /** Some series owned, or the coin was marked before series were tracked */
+  protected readonly hasAnySeries = computed(() =>
     this.collectionService.hasCoin(this.countryCode(), this.denomination())
+  );
+
+  /** Multi-series coins look owned only once every series is owned */
+  protected readonly isOwned = computed(() =>
+    this.hasManySeries()
+      ? this.ownedSeries() === this.seriesCount()
+      : this.collectionService.hasCoin(this.countryCode(), this.denomination())
   );
 
   protected readonly seriesCount = computed(
@@ -46,7 +56,13 @@ export class CoinCardComponent {
     () => `${this.countryName() || this.countryCode()} ${this.denominationLabel()} coin`
   );
 
-  protected onToggle(): void {
+  protected onToggle(event: Event): void {
+    if (this.hasManySeries()) {
+      // Series are chosen in the details dialog
+      event.preventDefault();
+      this.onOpen();
+      return;
+    }
     this.collectionService.toggleCoin(this.countryCode(), this.denomination());
   }
 

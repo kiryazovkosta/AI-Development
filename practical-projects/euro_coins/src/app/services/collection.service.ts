@@ -121,7 +121,7 @@ export class CollectionService {
     });
   }
 
-  private seriesCount(countryCode: string, denomination: Denomination): number {
+  seriesCount(countryCode: string, denomination: Denomination): number {
     return this.catalogService.getCoin(countryCode, denomination)?.series.length ?? 1;
   }
 
@@ -142,12 +142,17 @@ export class CollectionService {
     return owned;
   }
 
-  /** Owning a series also marks the coin as owned; unmarking a series keeps the coin */
+  /**
+   * Multi-series coins are marked per series, from the details dialog only. The coin itself
+   * ("BE-1e") counts as owned while at least one of its series is owned.
+   */
   toggleSeries(countryCode: string, denomination: Denomination, seriesNo: number): void {
-    if (this.seriesCount(countryCode, denomination) <= 1) {
+    const count = this.seriesCount(countryCode, denomination);
+    if (count <= 1) {
       this.toggleCoin(countryCode, denomination);
       return;
     }
+    const coinId = generateCoinId(countryCode, denomination);
     const seriesId = generateSeriesId(countryCode, denomination, seriesNo);
     this.ownedCoinsSet.update((set) => {
       const newSet = new Set(set);
@@ -155,8 +160,13 @@ export class CollectionService {
         newSet.delete(seriesId);
       } else {
         newSet.add(seriesId);
-        newSet.add(generateCoinId(countryCode, denomination));
       }
+      let anyOwned = false;
+      for (let n = 1; n <= count; n++) {
+        if (newSet.has(generateSeriesId(countryCode, denomination, n))) anyOwned = true;
+      }
+      if (anyOwned) newSet.add(coinId);
+      else newSet.delete(coinId);
       return newSet;
     });
   }
