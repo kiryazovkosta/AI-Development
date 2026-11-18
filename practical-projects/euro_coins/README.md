@@ -39,6 +39,18 @@ Each registered user maintains their **own independent collection**. After loggi
 
 ---
 
+## Coin images and details
+
+Coin pictures and texts come from the European Central Bank's euro coin pages.
+
+- `public/assets/coins/<iso>/<denomination>/s<n>.webp` is the 540×540 image of series *n*, and `s<n>-thumb.webp` a 160×160 thumbnail used in the grid.
+- Some countries have more than one series for a denomination (Belgium, France, Monaco, Netherlands, San Marino, Spain, Vatican City). The grid shows the newest series with a badge giving the number of series; clicking a coin opens a dialog with the full-size image, every series (thumbnail strip, arrows or ←/→ keys), the design description and the issuer text.
+- Ownership is still tracked per country and denomination.
+- The catalog lives in Supabase (`coin_issuers`, `coin_designs`, `coin_series`; migration in `supabase/migrations/`). Until that migration is applied, or if Supabase is unreachable, the app reads the bundled `public/assets/coins/catalog.json`.
+- Regenerate everything from a new ECB export with `python scripts/build-coin-catalog.py <EuroCoins dir> . supabase/coin_catalog_schema.sql supabase/migrations/<timestamp>_coin_catalog.sql`.
+
+---
+
 ## Technical Stack
 
 | Layer | Technology |

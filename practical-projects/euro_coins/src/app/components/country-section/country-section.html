@@ -12,6 +12,7 @@
     @for (denomination of denominations(); track denomination.value) {
       <app-coin-card
         [countryCode]="country().code"
+        [countryName]="country().name"
         [denomination]="denomination.value" />
     }
   </div>

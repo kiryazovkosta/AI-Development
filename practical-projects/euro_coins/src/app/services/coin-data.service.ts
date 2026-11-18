@@ -42,12 +42,8 @@ export class CoinDataService {
     { initialValue: DENOMINATIONS }
   )
 
-  getCoinImageUrl(countryCode: string, denomination: Denomination): string {
-    return `assets/coins/${countryCode.toLowerCase()}/${denomination}.png`;
-  }
-
-  getPlaceholderImageUrl(denomination: Denomination): string {
-    return `assets/coins/placeholder.svg`;
+  getPlaceholderImageUrl(): string {
+    return 'assets/coins/placeholder.svg';
   }
 
   getCountryFlagUrl(countryCode: string): string {
