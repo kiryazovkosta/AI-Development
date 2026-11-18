@@ -14,8 +14,12 @@
       loading="lazy"
       (error)="onImageError($event)" />
     @if (seriesCount() > 1) {
-      <span class="series-badge" [attr.aria-label]="seriesCount() + ' series'">
-        {{ seriesCount() }}
+      <span
+        class="series-badge"
+        [class.some]="ownedSeries() > 0"
+        [class.all]="ownedSeries() === seriesCount()"
+        [attr.aria-label]="ownedSeries() + ' of ' + seriesCount() + ' series owned'">
+        {{ ownedSeries() > 0 ? ownedSeries() + '/' + seriesCount() : seriesCount() }}
       </span>
     }
     <span class="zoom-hint" aria-hidden="true">

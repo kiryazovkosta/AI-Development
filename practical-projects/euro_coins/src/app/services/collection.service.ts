@@ -1,7 +1,8 @@
 import { CoinDataService } from './coin-data.service';
 import { Injectable, signal, computed, inject, effect } from '@angular/core';
 import { Denomination } from '../models/coin.models';
-import { generateCoinId } from '../utils/coin.utils';
+import { generateCoinId, generateSeriesId, isSeriesId } from '../utils/coin.utils';
+import { CoinCatalogService } from './coin-catalog.service';
 import { AuthService } from './auth.service';
 import { SupabaseService } from './supabase.service';
 
@@ -13,6 +14,7 @@ export class CollectionService {
   private readonly authService = inject(AuthService);
 
   readonly coinDataService = inject(CoinDataService);
+  private readonly catalogService = inject(CoinCatalogService);
   private countries = computed(() => this.coinDataService.countries());
   private denominations = computed(() => this.coinDataService.denominations());
 
@@ -26,13 +28,36 @@ export class CollectionService {
 
   readonly totalCoins = computed(() => this.countries().length * this.denominations().length);
 
-  readonly collectedCount = computed(() => this.ownedCoinsSet().size);
+  // The set holds "BE-1e" for a coin (country + denomination) and "BE-1e@2" for one series
+  // of a coin that has several. Single-series coins have no series entry: owning the coin
+  // means owning its only series.
+  readonly collectedCount = computed(
+    () => Array.from(this.ownedCoinsSet()).filter((id) => !isSeriesId(id)).length
+  );
 
   readonly collectionProgress = computed(() =>
     Math.round((this.collectedCount() / this.totalCoins()) * 100)
   );
 
   readonly isSyncing = computed(() => this.syncingSignal());
+
+  /** Every series of every coin; falls back to one per coin until the catalog is loaded */
+  readonly totalSeries = computed(() => {
+    const coins = this.catalogService.coins();
+    return coins.length
+      ? coins.reduce((sum, coin) => sum + coin.series.length, 0)
+      : this.totalCoins();
+  });
+
+  readonly collectedSeriesCount = computed(() =>
+    this.catalogService
+      .coins()
+      .reduce((sum, coin) => sum + this.countOwnedSeries(coin.countryCode, coin.denomination), 0)
+  );
+
+  readonly seriesProgress = computed(() =>
+    this.totalSeries() ? Math.round((this.collectedSeriesCount() / this.totalSeries()) * 100) : 0
+  );
 
   readonly countryProgress = computed(() => {
     const owned = this.ownedCoinsSet();
@@ -42,6 +67,14 @@ export class CollectionService {
         owned.has(generateCoinId(country.code, d.value))
       ).length,
       total: this.denominations().length,
+      collectedSeries: this.denominations().reduce(
+        (sum, d) => sum + this.countOwnedSeries(country.code, d.value),
+        0
+      ),
+      totalSeries: this.denominations().reduce(
+        (sum, d) => sum + this.seriesCount(country.code, d.value),
+        0
+      ),
     }));
   });
 
@@ -76,9 +109,53 @@ export class CollectionService {
     this.ownedCoinsSet.update((set) => {
       const newSet = new Set(set);
       if (newSet.has(coinId)) {
+        // Not owning the coin means owning none of its series
         newSet.delete(coinId);
+        for (const id of set) {
+          if (id.startsWith(coinId + '@')) newSet.delete(id);
+        }
       } else {
         newSet.add(coinId);
+      }
+      return newSet;
+    });
+  }
+
+  private seriesCount(countryCode: string, denomination: Denomination): number {
+    return this.catalogService.getCoin(countryCode, denomination)?.series.length ?? 1;
+  }
+
+  hasSeries(countryCode: string, denomination: Denomination, seriesNo: number): boolean {
+    if (this.seriesCount(countryCode, denomination) <= 1) {
+      return this.hasCoin(countryCode, denomination);
+    }
+    return this.ownedCoinsSet().has(generateSeriesId(countryCode, denomination, seriesNo));
+  }
+
+  countOwnedSeries(countryCode: string, denomination: Denomination): number {
+    const count = this.seriesCount(countryCode, denomination);
+    if (count <= 1) return this.hasCoin(countryCode, denomination) ? 1 : 0;
+    let owned = 0;
+    for (let n = 1; n <= count; n++) {
+      if (this.ownedCoinsSet().has(generateSeriesId(countryCode, denomination, n))) owned++;
+    }
+    return owned;
+  }
+
+  /** Owning a series also marks the coin as owned; unmarking a series keeps the coin */
+  toggleSeries(countryCode: string, denomination: Denomination, seriesNo: number): void {
+    if (this.seriesCount(countryCode, denomination) <= 1) {
+      this.toggleCoin(countryCode, denomination);
+      return;
+    }
+    const seriesId = generateSeriesId(countryCode, denomination, seriesNo);
+    this.ownedCoinsSet.update((set) => {
+      const newSet = new Set(set);
+      if (newSet.has(seriesId)) {
+        newSet.delete(seriesId);
+      } else {
+        newSet.add(seriesId);
+        newSet.add(generateCoinId(countryCode, denomination));
       }
       return newSet;
     });

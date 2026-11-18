@@ -27,6 +27,10 @@ export class CoinCardComponent {
     () => this.catalogService.getCoin(this.countryCode(), this.denomination())?.series.length ?? 0
   );
 
+  protected readonly ownedSeries = computed(() =>
+    this.collectionService.countOwnedSeries(this.countryCode(), this.denomination())
+  );
+
   protected readonly imageUrl = computed(
     () =>
       this.catalogService.getLatestSeries(this.countryCode(), this.denomination())?.thumb ??

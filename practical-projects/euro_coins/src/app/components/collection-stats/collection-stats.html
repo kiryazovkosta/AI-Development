@@ -7,22 +7,24 @@
       }
     </select>
   </div>  
-  <div class="stat-card">
-    <span class="stat-value">{{ collectionService.collectedCount() }}</span>
-    <span class="stat-label">Collected</span>
-  </div>
-  <div class="stat-card">
-    <span class="stat-value">{{ collectionService.totalCoins() }}</span>  
-    <span class="stat-label">Total Coins</span>
-  </div>
   <div class="stat-card progress-card">
+    <span class="stat-value">
+      {{ collectionService.collectedCount() }}<span class="stat-total"> / {{ collectionService.totalCoins() }}</span>
+    </span>
+    <span class="stat-label">Unique coins</span>
     <div class="progress-bar">
-      <div
-        class="progress-fill"
-        [style.width.%]="collectionService.collectionProgress()">
-      </div>
+      <div class="progress-fill" [style.width.%]="collectionService.collectionProgress()"></div>
     </div>
-    <span class="stat-value">{{ collectionService.collectionProgress() }}%</span>
-    <span class="stat-label">Complete</span>
+    <span class="stat-percent">{{ collectionService.collectionProgress() }}% complete</span>
+  </div>
+  <div class="stat-card progress-card" title="Every national design, counting each series separately">
+    <span class="stat-value">
+      {{ collectionService.collectedSeriesCount() }}<span class="stat-total"> / {{ collectionService.totalSeries() }}</span>
+    </span>
+    <span class="stat-label">All series</span>
+    <div class="progress-bar">
+      <div class="progress-fill" [style.width.%]="collectionService.seriesProgress()"></div>
+    </div>
+    <span class="stat-percent">{{ collectionService.seriesProgress() }}% complete</span>
   </div>
 </div>
