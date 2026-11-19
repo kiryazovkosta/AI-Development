@@ -6,7 +6,11 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "cap:sync": "ng build && cap sync",
+    "android": "ng build && cap sync android && cap open android",
+    "ios": "ng build && cap sync ios && cap open ios",
+    "cap:assets": "capacitor-assets generate --android --ios --iconBackgroundColor \"#1a5f7a\" --iconBackgroundColorDark \"#1a5f7a\" --splashBackgroundColor \"#1a5f7a\" --splashBackgroundColorDark \"#1a5f7a\""
   },
   "prettier": {
     "printWidth": 100,
@@ -29,6 +33,11 @@
     "@angular/platform-browser": "^20.3.0",
     "@angular/router": "^20.3.0",
     "@angular/service-worker": "^20.3.0",
+    "@capacitor/android": "^8.6.2",
+    "@capacitor/app": "^8.1.2",
+    "@capacitor/core": "^8.6.2",
+    "@capacitor/ios": "^8.6.2",
+    "@capacitor/splash-screen": "^8.0.2",
     "@supabase/supabase-js": "^2.117.2",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
@@ -37,6 +46,8 @@
     "@angular/build": "^20.3.2",
     "@angular/cli": "^20.3.2",
     "@angular/compiler-cli": "^20.3.0",
+    "@capacitor/assets": "^4.0.0",
+    "@capacitor/cli": "^8.6.2",
     "@types/jasmine": "~5.1.0",
     "jasmine-core": "~5.9.0",
     "karma": "~6.4.0",

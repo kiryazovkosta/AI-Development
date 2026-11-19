@@ -1,4 +1,5 @@
 import { Injectable, computed, signal } from '@angular/core';
+import { Capacitor } from '@capacitor/core';
 
 /** Chromium-only event; not in the TypeScript DOM typings. */
 interface BeforeInstallPromptEvent extends Event {
@@ -20,15 +21,17 @@ export class PwaInstallService {
 
   /** iOS/iPadOS: no `beforeinstallprompt`; installing is done via Share → Add to Home Screen. */
   readonly isIos = isIosDevice();
+  /** True inside the native Android/iOS app built with Capacitor. */
+  readonly isNativeApp = Capacitor.isNativePlatform();
   /** True when the app is already running as an installed app. */
-  readonly isInstalled = computed(() => this.standalone());
+  readonly isInstalled = computed(() => this.isNativeApp || this.standalone());
   /** The browser offered an install prompt we can show on demand. */
   readonly canPrompt = computed(() => this.deferredPrompt() !== null);
   /** Whether an "Install App" action makes sense on this device right now. */
-  readonly canInstall = computed(() => !this.standalone() && (this.canPrompt() || this.isIos));
+  readonly canInstall = computed(() => !this.isInstalled() && (this.canPrompt() || this.isIos));
 
   constructor() {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined' || this.isNativeApp) return;
 
     const standaloneQuery = window.matchMedia('(display-mode: standalone)');
     const updateStandalone = () =>
