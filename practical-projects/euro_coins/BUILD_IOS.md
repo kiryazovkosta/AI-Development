@@ -24,6 +24,13 @@
 | Node.js | **22 или по-нова** | `node -v`; препоръчвам `brew install node` или nvm |
 | iPhone | iOS 15+ | и USB кабел |
 
+Ако преди Xcode на Mac-а са били инсталирани само Command Line Tools, насочи командните инструменти към Xcode, иначе `xcodebuild` няма да работи:
+
+```bash
+sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+xcode-select -p   # трябва да покаже /Applications/Xcode.app/Contents/Developer
+```
+
 ## 2. Подготовка на кода
 
 ```bash
@@ -34,6 +41,8 @@ npm install
 ```
 
 Копирай на Mac-а и двата файла `src/environments/environment.ts` и `src/environments/environment.prod.ts` (с Supabase URL и anon key). Те не са в git. Без тях билдът няма да мине.
+
+Ако репото и двата environment файла вече са на Mac-а, стига `git pull` и `npm install` в папката `euro_coins`.
 
 ## 3. Билд и отваряне в Xcode
 
@@ -51,10 +60,12 @@ npm run ios
 4. **Team:** избери „*Твоето име* (Personal Team)“.
 5. Ако Xcode се оплаче, че Bundle Identifier е зает, смени го на нещо уникално, напр. `com.kiryazovkosta.eurocoins.dev`. (Промяната е само за iOS и не засяга Android.)
 
+> Изборът на Team и смяната на Bundle Identifier се записват в `ios/App/App.xcodeproj/project.pbxproj`, който е в git. Team ID не е тайна, но е личен: преди commit виж `git diff ios/` и реши съзнателно дали да го включиш. Ако не искаш, просто не добавяй този файл в commit-а.
+
 ## 5. Инсталирай на iPhone
 
 1. Свържи iPhone-а с кабел и отключи го. Натисни **Trust This Computer**.
-2. Включи **Developer Mode** на iPhone-а: **Settings → Privacy & Security → Developer Mode → On**. Телефонът ще се рестартира. (Опцията се появява чак след като Xcode е видял телефона веднъж.)
+2. Включи **Developer Mode** на iPhone-а: **Settings → Privacy & Security → Developer Mode → On**. Телефонът ще се рестартира. (Опцията се появява чак след като Xcode е видял телефона веднъж. Developer Mode има само в iOS 16 и по-нови; на iOS 15 тази стъпка се пропуска.)
 3. В Xcode горе избери iPhone-а като устройство и натисни **Run ▶** (⌘R).
 4. Първия път iPhone-ът ще откаже да стартира приложението („Untrusted Developer“). Отиди на **Settings → General → VPN & Device Management**, избери своя Apple ID → **Trust**.
 5. Натисни Run ▶ отново. Приложението **Euro Coins** е на началния екран.
@@ -95,3 +106,4 @@ npm run cap:assets
 | Приложението не се отваря след седмица | Изтекъл е 7-дневният профил на безплатния акаунт. Run ▶ отново от Xcode. |
 | Бял екран | Пусни `npm run ios` (билд + sync), не само отваряне на Xcode. Провери `environment.prod.ts`. |
 | Xcode не намира Capacitor пакетите | File → Packages → Reset Package Caches, после Product → Clean Build Folder. |
+| `xcodebuild` пише „requires Xcode, but active developer directory … is a command line tools instance“ | `sudo xcode-select -s /Applications/Xcode.app/Contents/Developer` (т. 1). |

@@ -16,7 +16,7 @@
 | Android SDK | Platform 36 + Build-Tools | Android Studio ги предлага при първото пускане (Setup Wizard → Standard). |
 | Телефон | Android 7+ | За инсталиране през USB: включен „USB debugging“ (виж т. 5). |
 
-След инсталирането на Android Studio отвори **Settings → Languages & Frameworks → Android SDK** и провери, че е отметнат **Android 16 (API 36)** в таб *SDK Platforms*.
+След инсталирането на Android Studio отвори **Settings → Languages & Frameworks → Android SDK** (на macOS: **Android Studio → Settings… → Languages & Frameworks → Android SDK**) и провери, че е отметнат **Android 16 (API 36)** в таб *SDK Platforms*.
 
 ## 2. Подготовка на кода
 
@@ -49,8 +49,10 @@ npx cap open android     # отваря android/ в Android Studio
 
 При първото отваряне Android Studio сваля Gradle и зависимостите. Това отнема няколко минути. Изчакай лентата долу да спре („Gradle sync finished“).
 
-> Ако `npx cap open android` не намери Android Studio на Windows, задай пътя веднъж:
-> `setx CAPACITOR_ANDROID_STUDIO_PATH "C:\Program Files\Android\Android Studio\bin\studio64.exe"` и отвори нов терминал.
+> Ако `npx cap open android` не намери Android Studio:
+> - **Windows:** `setx CAPACITOR_ANDROID_STUDIO_PATH "C:\Program Files\Android\Android Studio\bin\studio64.exe"` и отвори нов терминал.
+> - **macOS:** Capacitor го търси в `/Applications/Android Studio.app`. Ако е на друго място, добави в `~/.zshrc` ред `export CAPACITOR_ANDROID_STUDIO_PATH="/път/до/Android Studio.app"` и отвори нов терминал.
+>
 > Или просто отвори папката `android/` ръчно от Android Studio (File → Open).
 
 ## 4. Направи APK файл
@@ -78,9 +80,9 @@ Debug APK-то е подписано с автоматичен тестов кл
 ### Вариант Б: подписан release APK (за дълготрайно ползване)
 
 1. **Build → Generate Signed App Bundle or APK → APK → Next**.
-2. *Key store path → Create new…* Избери място **извън репото** (напр. `C:\Users\kosta\keys\eurocoins.jks`), сложи пароли и попълни името си.
+2. *Key store path → Create new…* Избери място **извън репото** (напр. `C:\Users\kosta\keys\eurocoins.jks` на Windows или `~/keys/eurocoins.jks` на macOS), сложи пароли и попълни името си.
 3. Избери **release** → *Create*.
-4. Файлът е в `android/app/release/app-release.apk`.
+4. Файлът е в `android/app/release/app-release.apk`. Цялата папка `android/app/release/` е в `.gitignore`, така че нищо от нея не отива в git.
 
 Пази `.jks` файла и паролите. Всяка следваща версия трябва да е подписана със **същия** ключ, иначе Android няма да я приеме като ъпдейт и ще трябва да деинсталираш старата (с което се губят локалните данни; колекцията ти е в Supabase, така че тя остава). В `.gitignore` вече има правило `*.jks` / `*.keystore`, за да не се качи ключ в GitHub по погрешка.
 
@@ -134,7 +136,7 @@ npm run cap:assets
 
 - **Service worker (PWA) е изключен** в мобилното приложение. Всички файлове са вътре в APK-то, а service worker само би показвал стара версия след ъпдейт. Във Vercel PWA-то работи както досега.
 - **Бутонът „Install App“ е скрит** в мобилното приложение, защото то вече е инсталирано.
-- Бутонът „Назад“ на Android връща към предишния екран, а на началния излиза от приложението.
+- Бутонът „Назад“ на Android първо затваря отворения прозорец с монета. Иначе връща към предишния екран, а на началните екрани (колекцията и вписването) излиза от приложението (`src/app/services/native-back-button.service.ts`).
 - Приложението има нужда от интернет, за да чете и записва колекцията в Supabase (както уеб версията).
 
 ## 9. Чести проблеми
@@ -142,7 +144,7 @@ npm run cap:assets
 | Симптом | Решение |
 |---|---|
 | `npx cap ...` пише, че Node е стар | Инсталирай Node 22 LTS или по-нов. |
-| `SDK location not found` | Отвори проекта веднъж в Android Studio, той създава `android/local.properties`. Или създай файла с `sdk.dir=C\:\\Users\\kosta\\AppData\\Local\\Android\\Sdk`. |
+| `SDK location not found` | Отвори проекта веднъж в Android Studio, той създава `android/local.properties`. Или създай файла ръчно: на Windows `sdk.dir=C\:\\Users\\kosta\\AppData\\Local\\Android\\Sdk`, на macOS `sdk.dir=/Users/<потребител>/Library/Android/sdk`. |
 | Бял екран след стартиране | Не си пуснал `npm run build` преди `npx cap sync`, или липсва `environment.prod.ts`. Пусни `npm run android` отново. |
 | Вписването не работи | Провери Supabase URL и anon key в `src/environments/environment.prod.ts`. |
 | „App not installed“ при инсталиране на нов APK | Новият APK е подписан с друг ключ от стария. Деинсталирай старото приложение и инсталирай отново. |

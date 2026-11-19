@@ -11,6 +11,7 @@ import { provideServiceWorker } from '@angular/service-worker';
 import { Capacitor } from '@capacitor/core';
 
 import { routes } from './app.routes';
+import { NativeBackButtonService } from './services/native-back-button.service';
 import { PwaInstallService } from './services/pwa-install.service';
 
 export const appConfig: ApplicationConfig = {
@@ -27,9 +28,11 @@ export const appConfig: ApplicationConfig = {
       enabled: !isDevMode() && !Capacitor.isNativePlatform(),
       registrationStrategy: 'registerWhenStable:30000',
     }),
-    // Start listening for the browser's install prompt before anyone logs in
+    // Start listening for the browser's install prompt before anyone logs in,
+    // and take over Android's Back button in the native app
     provideAppInitializer(() => {
       inject(PwaInstallService);
+      inject(NativeBackButtonService);
     }),
   ],
 };
