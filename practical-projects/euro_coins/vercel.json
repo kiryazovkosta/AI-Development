@@ -3,5 +3,21 @@
   "version": 2,
   "buildCommand": "npm run build",
   "outputDirectory": "dist/euro_coins/browser",
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(ngsw-worker\\.js|ngsw\\.json|safety-worker\\.js|worker-basic\\.min\\.js|manifest\\.webmanifest)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ]
+    }
+  ]
 }
