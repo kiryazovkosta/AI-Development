@@ -14,7 +14,7 @@ Each registered user maintains their **own independent collection**. After loggi
 
 | # | Requirement |
 |---|---|
-| FR-1 | Users must register and log in via email/password before accessing their collection |
+| FR-1 | Users log in with email and password before accessing their collection. There is no self-registration: an Administrator creates accounts on the **Create user** page, which calls the `create-user` Supabase Edge Function (`supabase/functions/create-user`) |
 | FR-2 | Each user's collection is fully isolated — no user can see or modify another's data |
 | FR-3 | The collection displays all 25 countries, each with 8 denomination cards |
 | FR-4 | Each coin card shows a coin image, denomination label, and owned/not-owned state |
@@ -35,7 +35,7 @@ Each registered user maintains their **own independent collection**. After loggi
 | NFR-2 | **Persistence** — Changes are saved to the cloud automatically. The collection survives logout, browser close, session expiry, or switching devices |
 | NFR-3 | **Security** — Only authenticated users can access their collection; unauthenticated visitors are redirected to login |
 | NFR-4 | **Responsiveness** — The application is usable on both desktop and mobile viewports |
-| NFR-5 | **Reliability** — The app remains functional even if the cloud service is temporarily unavailable |
+| NFR-5 | **Reliability** — If the cloud service is temporarily unavailable, the app says so and offers Retry. It never overwrites the stored collection: nothing is saved, and coins can't be marked, until the collection has loaded. Changes are saved one at a time, and pending changes are saved before sign-out and when the app goes to the background |
 
 ---
 
@@ -59,9 +59,38 @@ Coin pictures and texts come from the European Central Bank's euro coin pages.
 | Language | TypeScript |
 | Authentication | Supabase Auth |
 | Cloud Database | Supabase (Postgres) |
+| Installable app | Angular service worker (PWA) |
+| Mobile apps | Capacitor (Android, iOS) |
+| Hosting | Vercel (`vercel.json`) |
 | Development Tool | Claude Code |
 
 ---
+
+## Setup
+
+```bash
+npm install
+
+# Supabase settings are not committed. Copy the template and fill in the project URL and anon key
+# (Supabase: Project Settings → API).
+cp src/environments/environment.example.ts src/environments/environment.ts
+cp src/environments/environment.example.ts src/environments/environment.prod.ts
+```
+
+### Database schema
+
+Only the coin catalog is versioned (`supabase/migrations/`). The rest of the schema was set up in the Supabase dashboard and is not in this repository:
+
+- the tables `owned_coins`, `profiles`, `user_roles`, `roles`, `countries` and `denomination_info`, with their row level security policies
+- the `is_admin()` function used by the Edge Function
+- the `on_auth_user_created` trigger
+
+Those policies are what keep each user's collection private (FR-2). To bring them under version control, export the live schema into a migration:
+
+```bash
+npx supabase link --project-ref <project-ref>
+npx supabase db pull
+```
 
 ## Development
 
@@ -72,8 +101,8 @@ ng serve
 # Production build to dist/
 ng build
 
-# Run unit tests
-ng test
+# Run unit tests once in headless Chrome (drop the flags to keep watching)
+ng test --watch=false --browsers=ChromeHeadless
 
 # Development build with watch mode
 npm run watch

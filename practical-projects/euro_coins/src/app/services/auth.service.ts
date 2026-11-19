@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { FunctionsHttpError, User } from '@supabase/supabase-js';
 import { SupabaseService } from './supabase.service';
 
+const BEFORE_SIGN_OUT_TIMEOUT_MS = 3000;
+
 export interface AuthUser {
   uid: string;
   email: string | null;
@@ -33,6 +35,7 @@ export class AuthService {
   private readonly errorSignal = signal<AuthError | null>(null);
   private readonly displayNameSignal = signal<string | null>(null);
   private readonly rolesSignal = signal<string[]>([]);
+  private readonly beforeSignOutTasks: (() => Promise<void>)[] = [];
 
   readonly currentUser = computed<AuthUser | null>(() => {
     const user = this.currentUserSignal();
@@ -65,8 +68,12 @@ export class AuthService {
     });
   }
 
-  hasRole(role: string): boolean {
-    return this.rolesSignal().includes(role);
+  /**
+   * Registers work that must finish while the session is still valid, such as saving the
+   * last changes. Sign-out waits for it, but never longer than BEFORE_SIGN_OUT_TIMEOUT_MS.
+   */
+  onBeforeSignOut(task: () => Promise<void>): void {
+    this.beforeSignOutTasks.push(task);
   }
 
   async login(email: string, password: string): Promise<boolean> {
@@ -104,6 +111,10 @@ export class AuthService {
 
   async logout(): Promise<void> {
     this.errorSignal.set(null);
+    await Promise.race([
+      Promise.allSettled(this.beforeSignOutTasks.map((task) => task())),
+      new Promise((resolve) => setTimeout(resolve, BEFORE_SIGN_OUT_TIMEOUT_MS)),
+    ]);
     await this.supabase.auth.signOut();
     this.router.navigate(['/login']);
   }

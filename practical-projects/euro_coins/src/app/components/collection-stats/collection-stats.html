@@ -1,12 +1,30 @@
+@if (collectionService.syncError(); as error) {
+  <div class="sync-banner" role="alert">
+    <span>
+      @if (error === 'load') {
+        Couldn't load your collection. Check your connection and try again.
+      } @else {
+        Your latest changes aren't saved yet.
+      }
+    </span>
+    <button type="button" class="sync-retry" (click)="collectionService.retry()">Retry</button>
+  </div>
+}
+
 <div class="stats-container">
   <div class="stat-card select-card">
-    <select name="navigate-to-country" id="navigate-to-country" 
-      title="navigate-to-country" (change)="onCountrySelect($any($event.target).value)">
-      @for (name of this.collectionService.countriesNames(); track $index) {
-      <option value="{{name}}">{{name}}</option>
+    <select
+      #countrySelect
+      name="navigate-to-country"
+      id="navigate-to-country"
+      aria-label="Jump to country"
+      (change)="onCountrySelect(countrySelect)">
+      <option value="" selected disabled>Jump to country…</option>
+      @for (country of coinDataService.countries(); track country.code) {
+        <option [value]="country.code">{{ country.name }}</option>
       }
     </select>
-  </div>  
+  </div>
   <div class="stat-card progress-card">
     <span class="stat-value">
       {{ collectionService.collectedCount() }}<span class="stat-total"> / {{ collectionService.totalCoins() }}</span>
@@ -28,3 +46,11 @@
     <span class="stat-percent">{{ collectionService.seriesProgress() }}% complete</span>
   </div>
 </div>
+
+<p class="sync-status" role="status">
+  @if (collectionService.isLoading()) {
+    Loading your collection…
+  } @else if (collectionService.isSaving()) {
+    Saving…
+  }
+</p>

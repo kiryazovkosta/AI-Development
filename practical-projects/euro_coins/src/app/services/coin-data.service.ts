@@ -18,9 +18,7 @@ export class CoinDataService {
         return data?.length ? (data as Country[]) : EURO_COUNTRIES;
       }),
       map(countries => [...countries].sort((a, b) => a.name.localeCompare(b.name))),
-      catchError((err) => {
-        return of(EURO_COUNTRIES);
-      })
+      catchError(() => of(EURO_COUNTRIES))
     ),
     { initialValue: EURO_COUNTRIES }
   );
@@ -35,9 +33,7 @@ export class CoinDataService {
         return data?.length ? (data as DenominationInfo[]) : DENOMINATIONS;
       }),
       map(denoms => [...denoms].sort((a, b) => a.sortOrder - b.sortOrder)),
-      catchError((err) => {
-        return of(DENOMINATIONS);
-      })
+      catchError(() => of(DENOMINATIONS))
     ),
     { initialValue: DENOMINATIONS }
   )
@@ -49,10 +45,6 @@ export class CoinDataService {
   getCountryFlagUrl(countryCode: string): string {
     if (!countryCode) return '';
     return `https://flagcdn.com/w40/${countryCode.toLowerCase()}.png`;
-  }
-
-  getCountryByCode(code: string): Country | undefined {
-    return EURO_COUNTRIES.find(c => c.code === code);
   }
 
   getDenominationByValue(value: Denomination): DenominationInfo | undefined {

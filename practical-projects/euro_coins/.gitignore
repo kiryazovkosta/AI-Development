@@ -37,15 +37,19 @@ yarn-error.log
 testem.log
 /typings
 
-# Supabase environment config
+# Supabase environment config: the real files hold the project's URL and key.
+# The repository-wide "environments/" rule is lifted here so environment.example.ts is tracked.
+!src/environments/
 src/environments/environment.ts
 src/environments/environment.prod.ts
+
+# The repository-wide .gitignore skips lockfiles; this app needs one for reproducible builds
+!package-lock.json
 
 # System files
 .DS_Store
 Thumbs.db
 /nul
 .vercel
-environments/
 CLAUDE.md
 .env*

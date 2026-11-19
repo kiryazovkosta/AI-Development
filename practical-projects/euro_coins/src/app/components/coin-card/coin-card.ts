@@ -19,6 +19,9 @@ export class CoinCardComponent {
   private readonly catalogService = inject(CoinCatalogService);
   private readonly collectionService = inject(CollectionService);
 
+  /** Toggles stay off until the collection is loaded, so nothing can overwrite it */
+  protected readonly canEdit = this.collectionService.isReady;
+
   protected readonly hasManySeries = computed(() => this.seriesCount() > 1);
 
   /** Some series owned, or the coin was marked before series were tracked */

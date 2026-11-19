@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, inject, input, Input, signal, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, input, signal, ViewChild } from '@angular/core';
 
 @Component({
   selector: 'app-back-to-top',
@@ -62,12 +62,8 @@ export class BackToTop {
     });
 
     setTimeout(() => {
-      const header = document.querySelector('.header') as HTMLElement;
-      if (header) {
-        header.focus();
-      } else {
-        console.warn('Header element not found for focus after scroll to top.');
-      }
+      // The page title has tabindex="-1", so it can take focus without joining the tab order
+      document.querySelector<HTMLElement>('.app-header h1')?.focus({ preventScroll: true });
     }, (this.focusDelay()));
   }
 

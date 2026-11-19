@@ -15,20 +15,6 @@ export interface Country {
   joinYear: number;
 }
 
-export interface CollectionState {
-  ownedCoins: string[];
-  lastUpdated: string;
-}
-
-export interface CollectedCoins {
-  country: string;
-  coins: string[];
-}
-
-export interface OwnedCoins {
-  collected: CollectedCoins[];
-}
-
 export interface CoinSeries {
   seriesNo: number;
   years: string;

@@ -75,7 +75,11 @@
           }
 
           <label class="owned-toggle" [class.owned]="isCurrentSeriesOwned()">
-            <input type="checkbox" [checked]="isCurrentSeriesOwned()" (change)="toggleOwned()" />
+            <input
+              type="checkbox"
+              [checked]="isCurrentSeriesOwned()"
+              [disabled]="!canEdit()"
+              (change)="toggleOwned()" />
             <span>
               @if (hasManySeries()) {
                 {{ isCurrentSeriesOwned() ? 'This series is in my collection' : 'Add this series' }}

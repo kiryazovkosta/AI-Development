@@ -56,6 +56,9 @@ export class CoinDialogComponent {
     this.catalogService.getIssuerDescription(this.coin()?.countryCode ?? '')
   );
 
+  /** Toggles stay off until the collection is loaded, so nothing can overwrite it */
+  protected readonly canEdit = this.collectionService.isReady;
+
   protected readonly isOwned = computed(() => {
     const coin = this.coin();
     return coin ? this.collectionService.hasCoin(coin.countryCode, coin.denomination) : false;
