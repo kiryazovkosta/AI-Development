@@ -1,0 +1,37 @@
+@if (authService.isAuthenticated() && pwa.canInstall()) {
+  <div class="install-app">
+    <button
+      type="button"
+      class="btn-install"
+      (click)="onInstall()"
+      [attr.aria-expanded]="pwa.canPrompt() ? null : showIosHelp()"
+    >
+      <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+        <path d="M12 3v12m0 0-5-5m5 5 5-5M5 21h14" fill="none" stroke="currentColor"
+          stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+      Install App
+    </button>
+
+    @if (showIosHelp()) {
+      <div class="ios-help" role="dialog" aria-label="Install on iPhone or iPad">
+        <button type="button" class="ios-help-close" aria-label="Close"
+          (click)="showIosHelp.set(false)">&times;</button>
+        <p class="ios-help-title">Install Euro Coins</p>
+        <ol>
+          <li>
+            Tap <strong>Share</strong>
+            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+              <path d="M12 15V3m0 0-4 4m4-4 4 4M7 11H5v10h14V11h-2" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
+            in the browser toolbar.
+          </li>
+          <li>Choose <strong>Add to Home Screen</strong>.</li>
+          <li>Tap <strong>Add</strong>.</li>
+        </ol>
+      </div>
+    }
+  </div>
+}

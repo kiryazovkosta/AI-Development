@@ -9,6 +9,7 @@
         <span class="user-email">
           {{ authService.displayName() ?? authService.currentUser()?.email }}
         </span>
+        <app-install-app />
         @if (authService.isAdmin()) {
           <a class="btn-header-link" routerLink="/users/new">Create user</a>
         }
