@@ -78,3 +78,17 @@ ng test
 # Development build with watch mode
 npm run watch
 ```
+
+## Mobile apps (Android and iOS)
+
+The app is packaged as a native Android and iOS app with [Capacitor](https://capacitorjs.com/) (`capacitor.config.ts`, native projects in `android/` and `ios/`). Step-by-step guides:
+
+- [BUILD_ANDROID.md](BUILD_ANDROID.md): build an APK with Android Studio and install it on a phone
+- [BUILD_IOS.md](BUILD_IOS.md): build with Xcode on a Mac and install on an iPhone (free Apple ID works)
+
+```bash
+npm run android    # ng build + cap sync android + open Android Studio
+npm run ios        # ng build + cap sync ios + open Xcode (macOS only)
+npm run cap:sync   # after any web change: rebuild and copy into both native projects
+npm run cap:assets # regenerate app icons and splash screens from assets/
+```
