@@ -59,7 +59,6 @@ Coin pictures and texts come from the European Central Bank's euro coin pages.
 | Language | TypeScript |
 | Authentication | Supabase Auth |
 | Cloud Database | Supabase (Postgres) |
-| Installable app | Angular service worker (PWA) |
 | Mobile apps | Capacitor (Android, iOS) |
 | Hosting | Vercel (`vercel.json`) |
 | Development Tool | Claude Code |

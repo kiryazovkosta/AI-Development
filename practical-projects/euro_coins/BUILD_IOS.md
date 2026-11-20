@@ -117,7 +117,7 @@ npm run cap:assets
 - облачен Mac (MacinCloud, AWS EC2 Mac) с горните стъпки;
 - облачен билд (Codemagic, GitHub Actions с macOS runner), но за подписан `.ipa` и инсталиране на устройство там на практика трябва платеният Apple Developer акаунт.
 
-Дотогава на iPhone може да ползваш уеб версията във Vercel чрез Safari → Share → **Add to Home Screen** (бутонът „Install App“ в приложението показва точно тези стъпки).
+Дотогава на iPhone може да ползваш уеб версията във Vercel в Safari. (PWA версията с бутон „Install App“ е в бранч `feature/pwa-installable-app`.)
 
 ## 9. Чести проблеми
 
