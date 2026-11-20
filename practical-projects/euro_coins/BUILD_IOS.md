@@ -2,6 +2,8 @@
 
 Нативният iOS проект е в папка `ios/` и се отваря с Xcode. Използва Swift Package Manager, така че **не е нужен CocoaPods**.
 
+> Билд, подписване и инсталиране **само от терминала** (VS Code), без admin права и с отделен keychain за подписване: виж [BUILD_IOS_DEVICE.md](BUILD_IOS_DEVICE.md). Това са стъпките, с които приложението беше реално инсталирано.
+
 - Bundle ID: `com.kiryazovkosta.eurocoins`
 - Минимална версия: iOS 15
 
@@ -30,6 +32,15 @@
 sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
 xcode-select -p   # трябва да покаже /Applications/Xcode.app/Contents/Developer
 ```
+
+Ако Xcode е на друго място (напр. `/Applications/Development/Xcode.app`), използвай неговия път в командата. След нова версия на Xcode приеми лиценза и довърши първоначалната настройка:
+
+```bash
+sudo xcodebuild -license accept
+sudo xcodebuild -runFirstLaunch
+```
+
+> **Без admin права (напр. служебен Mac):** `sudo` няма да работи. Лицензът и първоначалната настройка се правят веднъж от администратор (или от прозореца, който Xcode показва при първото отваряне и който иска admin парола). Вместо `sudo xcode-select -s` задай пътя само за терминала: `export DEVELOPER_DIR=/Applications/Development/Xcode.app/Contents/Developer` (може и в `~/.zshrc`). Самото Xcode и `npm run ios` работят и без това.
 
 ## 2. Подготовка на кода
 
@@ -69,6 +80,17 @@ npm run ios
 3. В Xcode горе избери iPhone-а като устройство и натисни **Run ▶** (⌘R).
 4. Първия път iPhone-ът ще откаже да стартира приложението („Untrusted Developer“). Отиди на **Settings → General → VPN & Device Management**, избери своя Apple ID → **Trust**.
 5. Натисни Run ▶ отново. Приложението **Euro Coins** е на началния екран.
+
+### Алтернатива: само от терминала (напр. във VS Code)
+
+Xcode трябва да е инсталиран, но прозорецът му е нужен само веднъж: за добавяне на Apple ID (т. 4.1). След това:
+
+```bash
+export IOS_TEAM_ID=XXXXXXXXXX   # твоят Personal Team ID (веднъж, напр. в ~/.zshrc)
+npm run ios:device              # билд + sync + подписване + инсталиране + стартиране на свързания iPhone
+```
+
+Пълните стъпки (Mac и iPhone) и решенията на срещнатите проблеми са в [BUILD_IOS_DEVICE.md](BUILD_IOS_DEVICE.md). Скриптът е `scripts/ios-device.sh`. Team ID и Bundle ID се подават от командния ред, така че `project.pbxproj` не се променя. Ако `com.kiryazovkosta.eurocoins` е зает, задай `IOS_BUNDLE_ID=com.kiryazovkosta.eurocoins.dev`. Стъпките на iPhone-а (Trust, Developer Mode, Trust на разработчика) остават същите; ако приложението не тръгне, скриптът подсказва какво да включиш.
 
 ## 6. След промяна в кода или след 7 дни
 

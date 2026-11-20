@@ -114,10 +114,12 @@ The app is packaged as a native Android and iOS app with [Capacitor](https://cap
 
 - [BUILD_ANDROID.md](BUILD_ANDROID.md): build an APK with Android Studio and install it on a phone
 - [BUILD_IOS.md](BUILD_IOS.md): build with Xcode on a Mac and install on an iPhone (free Apple ID works)
+- [BUILD_IOS_DEVICE.md](BUILD_IOS_DEVICE.md): build, sign and install on an iPhone from the terminal only (`npm run ios:device`), including a Mac without admin rights
 
 ```bash
 npm run android    # ng build + cap sync android + open Android Studio
 npm run ios        # ng build + cap sync ios + open Xcode (macOS only)
+npm run ios:device # ng build + cap sync ios + sign, install and launch on a USB-connected iPhone
 npm run cap:sync   # after any web change: rebuild and copy into both native projects
 npm run cap:assets # regenerate app icons and splash screens from assets/
 ```
