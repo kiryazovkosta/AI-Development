@@ -3,6 +3,7 @@
   border-radius: var(--radius-lg);
   padding: var(--spacing-lg);
   box-shadow: var(--shadow-sm);
+  container-type: inline-size;
 }
 
 .country-header {
@@ -45,13 +46,15 @@
   gap: var(--spacing-sm);
 }
 
-@media (max-width: 900px) {
+/* By the room inside the section rather than the screen: a coin needs 100px, and a phone in
+   landscape loses width to the camera */
+@container (max-width: 855px) {
   .coins-row {
     grid-template-columns: repeat(4, 1fr);
   }
 }
 
-@media (max-width: 500px) {
+@container (max-width: 423px) {
   .coins-row {
     grid-template-columns: repeat(2, 1fr);
   }

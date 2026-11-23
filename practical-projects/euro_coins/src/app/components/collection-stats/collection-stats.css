@@ -127,7 +127,7 @@
   transition: width var(--transition-normal);
 }
 
-/* Same breakpoints as the coin rows in country-section.css */
+/* About where the coin rows in country-section.css change too */
 @media (max-width: 900px) {
   .stats-container {
     grid-template-columns: repeat(2, minmax(0, 1fr));

@@ -91,6 +91,8 @@
   max-height: none;
   margin: 0 0 0 auto;
   border: none;
+  /* Behind the clock and battery, whose white icons need a dark background */
+  border-top: var(--safe-top) solid var(--color-primary);
   background: var(--color-surface);
   color: var(--color-text);
   box-shadow: var(--shadow-lg);
@@ -114,9 +116,8 @@
   display: flex;
   flex-direction: column;
   min-height: 100%;
-  padding: max(var(--spacing-md), env(safe-area-inset-top))
-    max(var(--spacing-md), env(safe-area-inset-right))
-    max(var(--spacing-md), env(safe-area-inset-bottom)) var(--spacing-md);
+  padding: var(--spacing-md) max(var(--spacing-md), var(--safe-right))
+    max(var(--spacing-md), var(--safe-bottom)) var(--spacing-md);
 }
 
 .drawer-header {

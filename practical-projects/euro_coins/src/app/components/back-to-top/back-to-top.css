@@ -1,7 +1,7 @@
 .back-to-top {
   position: fixed;
-  bottom: var(--spacing-lg);
-  right: var(--spacing-lg);
+  bottom: calc(var(--spacing-lg) + var(--safe-bottom));
+  right: calc(var(--spacing-lg) + var(--safe-right));
   padding: var(--spacing-md);
   background: var(--color-primary);
   color: var(--color-surface);

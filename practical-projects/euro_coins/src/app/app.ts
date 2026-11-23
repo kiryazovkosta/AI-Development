@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { DOCUMENT, ViewportScroller } from '@angular/common';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './components/header/header';
 import { Footer } from './components/footer/footer';
@@ -11,4 +12,13 @@ import { LockScreenComponent } from './components/lock-screen/lock-screen';
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
-export class App {}
+export class App {
+  constructor() {
+    const document = inject(DOCUMENT);
+    // Angular scrolls to anchors by itself, without the page's scroll-padding
+    inject(ViewportScroller).setOffset(() => [
+      0,
+      parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0,
+    ]);
+  }
+}

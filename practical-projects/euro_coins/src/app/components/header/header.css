@@ -1,7 +1,9 @@
 .app-header {
   background: linear-gradient(135deg, var(--color-primary) 0%, #0d3d4d 100%);
   color: white;
-  padding: var(--spacing-xl) var(--spacing-md);
+  --header-padding: var(--spacing-xl);
+  padding: calc(var(--header-padding) + var(--safe-top)) max(var(--spacing-md), var(--safe-right))
+    var(--header-padding) max(var(--spacing-md), var(--safe-left));
   margin-bottom: var(--spacing-lg);
 }
 
@@ -29,7 +31,7 @@
 /* Leaves room for the menu button on a phone */
 @media (max-width: 600px) {
   .app-header {
-    padding: var(--spacing-lg) var(--spacing-md);
+    --header-padding: var(--spacing-lg);
   }
 
   .header-title h1 {

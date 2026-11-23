@@ -11,6 +11,10 @@ const config: CapacitorConfig = {
     allowMixedContent: false,
   },
   plugins: {
+    SystemBars: {
+      // White clock and battery: the area behind them is always dark blue
+      style: 'DARK',
+    },
     SplashScreen: {
       launchShowDuration: 1000,
       launchAutoHide: true,
