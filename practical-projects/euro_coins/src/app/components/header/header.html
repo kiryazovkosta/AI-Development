@@ -1,5 +1,5 @@
 <header class="app-header">
-  <div class="header-content">
+  <div class="header-content" [class.with-face-id]="biometricLogin.toggleLabel() && authService.isAuthenticated()">
     <div class="header-title">
       <h1 tabindex="-1">Euro Coin Collection</h1>
       <p class="subtitle">Track your Euro coin collection</p>
@@ -11,6 +11,16 @@
         </span>
         @if (authService.isAdmin()) {
           <a class="btn-header-link" routerLink="/users/new">Create user</a>
+        }
+        @if (biometricLogin.toggleLabel(); as name) {
+          <button
+            type="button"
+            class="btn-logout"
+            [attr.aria-pressed]="biometricLogin.enabled()"
+            [disabled]="togglingFaceId()"
+            (click)="onToggleFaceId()">
+            {{ name }}: {{ biometricLogin.enabled() ? 'On' : 'Off' }}
+          </button>
         }
         <button class="btn-logout" (click)="onLogout()">Sign Out</button>
       </div>

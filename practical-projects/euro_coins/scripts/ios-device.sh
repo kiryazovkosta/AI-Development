@@ -82,4 +82,4 @@ if ! xcrun devicectl device process launch --device "$udid" "$bundle_id"; then
   echo "Then run this again, or just tap the Euro Coins icon." >&2
   exit 1
 fi
-echo "✔ Euro Coins is running on the iPhone. The free signing lasts 7 days; run this again to renew."
+echo "✔ Euro Coins is running on the iPhone. The free signing lasts 7 days; run this again once it expires."

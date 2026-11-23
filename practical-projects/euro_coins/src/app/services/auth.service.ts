@@ -1,6 +1,8 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { FunctionsHttpError, User } from '@supabase/supabase-js';
+import { AppLockService } from './native/app-lock.service';
+import { SecureSessionStorage } from './native/secure-session-storage.service';
 import { SupabaseService } from './supabase.service';
 
 const BEFORE_SIGN_OUT_TIMEOUT_MS = 3000;
@@ -28,6 +30,8 @@ export interface NewUser {
 export class AuthService {
   private readonly supabase = inject(SupabaseService).client;
   private readonly router = inject(Router);
+  private readonly appLock = inject(AppLockService);
+  private readonly sessionStorage = inject(SecureSessionStorage);
 
   private readonly currentUserSignal = signal<User | null>(null);
   private readonly loadingSignal = signal<boolean>(true);
@@ -117,6 +121,19 @@ export class AuthService {
     ]);
     await this.supabase.auth.signOut();
     this.router.navigate(['/login']);
+  }
+
+  /**
+   * Native app: leaves the lock screen without unlocking, by dropping the session on this
+   * device. Needs no network. The content stays covered until the session is gone.
+   */
+  async signOutLocal(): Promise<void> {
+    this.errorSignal.set(null);
+    await this.sessionStorage.discard();
+    // Finds no stored session any more, so it only tells the app that the user is signed out
+    await this.supabase.auth.signOut({ scope: 'local' });
+    await this.router.navigate(['/login']);
+    this.appLock.release(false);
   }
 
   clearError(): void {

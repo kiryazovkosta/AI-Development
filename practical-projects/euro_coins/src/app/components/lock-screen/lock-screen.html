@@ -1,0 +1,27 @@
+<dialog
+  #dialog
+  class="lock-screen"
+  aria-labelledby="lock-screen-title"
+  (cancel)="$event.preventDefault()"
+  (close)="onClose()">
+  <div class="lock-content">
+    <h2 id="lock-screen-title">Euro Coins is locked</h2>
+    @if (appLock.message(); as message) {
+      <p class="lock-message" role="alert">{{ message }}</p>
+    }
+    <button
+      type="button"
+      class="btn-primary"
+      [disabled]="appLock.prompting() || signingOut()"
+      (click)="appLock.unlock()">
+      Unlock
+    </button>
+    <button
+      type="button"
+      class="btn-text"
+      [disabled]="appLock.prompting() || signingOut()"
+      (click)="usePassword()">
+      Sign in with password
+    </button>
+  </div>
+</dialog>

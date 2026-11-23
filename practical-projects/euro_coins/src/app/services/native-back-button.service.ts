@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { App } from '@capacitor/app';
-import { Capacitor } from '@capacitor/core';
+import { AppLockService } from './native/app-lock.service';
+import { AppLifecycle, NativePlatform } from './native/native-adapters';
 
 /** Start screens: Back here leaves the app instead of going back in history. */
 const EXIT_PATHS = ['/collection', '/login'];
@@ -18,14 +18,22 @@ const EXIT_PATHS = ['/collection', '/login'];
 @Injectable({ providedIn: 'root' })
 export class NativeBackButtonService {
   private readonly router = inject(Router);
+  private readonly appLock = inject(AppLockService);
+  private readonly lifecycle = inject(AppLifecycle);
 
   constructor() {
-    if (Capacitor.getPlatform() !== 'android') return;
+    if (!inject(NativePlatform).isAndroid) return;
     // Registering a listener replaces Capacitor's default Back behaviour
-    void App.addListener('backButton', () => this.onBack());
+    this.lifecycle.onBackButton(() => this.onBack());
   }
 
   private onBack(): void {
+    // The lock screen is a <dialog> too, and must never be closed by Back
+    if (this.appLock.locked()) {
+      this.lifecycle.exitApp();
+      return;
+    }
+
     // An open <dialog> (the coin details) closes first, the same way Esc closes it
     const openDialog = document.querySelector<HTMLDialogElement>('dialog[open]');
     if (openDialog) {
@@ -35,7 +43,7 @@ export class NativeBackButtonService {
 
     const path = this.router.url.split(/[?#]/)[0];
     if (EXIT_PATHS.includes(path)) {
-      void App.exitApp();
+      this.lifecycle.exitApp();
     } else {
       window.history.back();
     }

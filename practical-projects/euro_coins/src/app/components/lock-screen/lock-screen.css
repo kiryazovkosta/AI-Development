@@ -1,0 +1,58 @@
+.lock-screen {
+  width: 100vw;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  border: none;
+  background: linear-gradient(135deg, var(--color-primary) 0%, #0d3d4d 100%);
+  color: white;
+}
+
+.lock-screen[open] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Opaque, so nothing shows through */
+.lock-screen::backdrop {
+  background: #0d3d4d;
+}
+
+.lock-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  width: min(320px, 100%);
+  padding: var(--spacing-md);
+  text-align: center;
+}
+
+.lock-message {
+  font-size: 0.875rem;
+}
+
+.lock-content .btn-primary {
+  background: white;
+  color: var(--color-primary);
+}
+
+.lock-content .btn-primary:hover:not(:disabled) {
+  background: #e9f3f6;
+}
+
+.btn-text {
+  padding: var(--spacing-sm);
+  border: none;
+  background: none;
+  color: white;
+  font: inherit;
+  font-size: 0.875rem;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.btn-text:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

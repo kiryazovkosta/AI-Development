@@ -73,3 +73,16 @@
   background: #6fd3c5;
   border-color: #6fd3c5;
 }
+
+/* Native app: the extra Face ID button doesn't fit next to the title on a phone */
+@media (max-width: 600px) {
+  .with-face-id {
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+  }
+
+  .with-face-id .header-user {
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+  }
+}
