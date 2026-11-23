@@ -90,7 +90,7 @@ export class BiometricLoginService {
     await this.settings.update({ declinedBy: normalize(email) });
   }
 
-  /** From the header, where the password isn't known: it is saved at the next password sign-in */
+  /** From the menu, where the password isn't known: it is saved at the next password sign-in */
   async enable(): Promise<void> {
     const email = this.authService.currentUser()?.email;
     if (!this.nameSignal() || !email) return;

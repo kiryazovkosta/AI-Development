@@ -9,6 +9,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: var(--spacing-md);
   max-width: 1400px;
   margin: 0 auto;
 }
@@ -25,64 +26,13 @@
   font-size: 1rem;
 }
 
-.header-user {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-}
-
-.user-email {
-  font-size: 0.875rem;
-  opacity: 0.9;
-}
-
-/* Shared shape and typography so the <button> and the <a> render identically */
-.btn-logout,
-.btn-header-link {
-  display: inline-block;
-  padding: var(--spacing-xs) var(--spacing-md);
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  font-family: inherit;
-  font-size: 0.875rem;
-  font-weight: 500;
-  line-height: 1.5;
-  text-decoration: none;
-  transition:
-    background var(--transition-fast),
-    border-color var(--transition-fast);
-}
-
-.btn-logout {
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-}
-
-.btn-logout:hover {
-  background: rgba(255, 255, 255, 0.3);
-}
-
-.btn-header-link {
-  background: var(--color-secondary);
-  color: #0d3d4d;
-  border: 1px solid var(--color-secondary);
-}
-
-.btn-header-link:hover {
-  background: #6fd3c5;
-  border-color: #6fd3c5;
-}
-
-/* Native app: the extra Face ID button doesn't fit next to the title on a phone */
+/* Leaves room for the menu button on a phone */
 @media (max-width: 600px) {
-  .with-face-id {
-    flex-wrap: wrap;
-    gap: var(--spacing-md);
+  .app-header {
+    padding: var(--spacing-lg) var(--spacing-md);
   }
 
-  .with-face-id .header-user {
-    flex-wrap: wrap;
-    gap: var(--spacing-sm);
+  .header-title h1 {
+    font-size: 1.5rem;
   }
 }

@@ -29,7 +29,7 @@ export class LoginComponent {
 
   constructor() {
     void this.biometricLogin.refresh();
-    // Signing out from the header while the question is open returns to the form
+    // Signing out from the menu while the question is open returns to the form
     effect(() => {
       if (!this.authService.isAuthenticated()) this.offer.set(null);
     });
