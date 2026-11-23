@@ -119,7 +119,8 @@ export class AuthService {
       Promise.allSettled(this.beforeSignOutTasks.map((task) => task())),
       new Promise((resolve) => setTimeout(resolve, BEFORE_SIGN_OUT_TIMEOUT_MS)),
     ]);
-    await this.supabase.auth.signOut();
+    // Only this device: supabase-js signs out everywhere by default
+    await this.supabase.auth.signOut({ scope: 'local' });
     this.router.navigate(['/login']);
   }
 
