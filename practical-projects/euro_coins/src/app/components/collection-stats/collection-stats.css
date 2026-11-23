@@ -29,11 +29,11 @@
   background: #9b2c2c;
 }
 
+/* Fills the same width as the country sections below */
 .stats-container {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--spacing-md);
-  justify-content: center;
-  flex-wrap: wrap;
 }
 
 /* Reserves its line so the grid doesn't jump while "Saving…" comes and goes */
@@ -51,7 +51,6 @@
   padding: var(--spacing-lg);
   text-align: center;
   box-shadow: var(--shadow-sm);
-  min-width: 120px;
 }
 
 .select-card {
@@ -62,7 +61,6 @@
 
 .stat-card select {
   width: 100%;
-  min-width: 180px;
   padding: var(--spacing-sm) var(--spacing-md);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
@@ -97,10 +95,6 @@
   margin-top: var(--spacing-xs);
 }
 
-.progress-card {
-  min-width: 220px;
-}
-
 .stat-total {
   font-size: 1.125rem;
   font-weight: 600;
@@ -131,4 +125,21 @@
   background: linear-gradient(90deg, var(--color-secondary) 0%, var(--color-success) 100%);
   border-radius: var(--radius-sm);
   transition: width var(--transition-normal);
+}
+
+/* Same breakpoints as the coin rows in country-section.css */
+@media (max-width: 900px) {
+  .stats-container {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .select-card {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 500px) {
+  .stats-container {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
