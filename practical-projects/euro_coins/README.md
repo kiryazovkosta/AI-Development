@@ -97,8 +97,8 @@ npx supabase db pull
 # Start dev server at localhost:4200
 ng serve
 
-# Production build to dist/
-ng build
+# Production build to dist/ (the footer shows the build time and git commit)
+npm run build
 
 # Run unit tests once in headless Chrome (drop the flags to keep watching)
 ng test --watch=false --browsers=ChromeHeadless

@@ -4,13 +4,13 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "node scripts/build.mjs",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "cap:sync": "ng build && cap sync",
-    "android": "ng build && cap sync android && cap open android",
-    "ios": "ng build && cap sync ios && cap open ios",
-    "ios:device": "ng build && cap sync ios && bash scripts/ios-device.sh",
+    "cap:sync": "npm run build && cap sync",
+    "android": "npm run build && cap sync android && cap open android",
+    "ios": "npm run build && cap sync ios && cap open ios",
+    "ios:device": "npm run build && cap sync ios && bash scripts/ios-device.sh",
     "cap:assets": "capacitor-assets generate --android --ios --iconBackgroundColor \"#1a5f7a\" --iconBackgroundColorDark \"#1a5f7a\" --splashBackgroundColor \"#1a5f7a\" --splashBackgroundColorDark \"#1a5f7a\""
   },
   "prettier": {

@@ -12,3 +12,9 @@
   font-size: 1.2rem;
   font-weight: bold;
 }
+
+.app-footer .build-info {
+  margin-top: var(--spacing-xs);
+  font-size: 0.8125rem;
+  font-weight: normal;
+}

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Builds the iOS app, signs it with your (free) Personal Team and installs + launches it on a
 # USB-connected iPhone, without opening the Xcode window. Run via `npm run ios:device`, which
-# first does `ng build` and `cap sync ios`.
+# first does `npm run build` and `cap sync ios`.
 #
 # One-time setup:
 #   1. Xcode → Settings → Accounts → + → Apple ID (the only step that needs the Xcode window).

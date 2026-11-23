@@ -142,7 +142,7 @@ npm run ios:device
 
 Какво прави командата:
 
-1. `ng build`: production билд на Angular (`environment.prod.ts`)
+1. `npm run build`: production билд на Angular (`environment.prod.ts`). Часът на билда и git commit-ът се показват най-долу в приложението; `+` след commit-а значи, че има некомитнати промени
 2. `cap sync ios`: копира билда в `ios/App/App/public`
 3. `scripts/ios-device.sh`:
    - намира Xcode (без `xcode-select`) и свързания iPhone;
