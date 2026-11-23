@@ -22,7 +22,7 @@ describe('Footer', () => {
   it('shows the build time, in local time, and the commit under the name', async () => {
     const time = new Date(2026, 10, 23, 22, 5);
     expect(await buildLine({ time, commit: 'abc1234+' })).toBe(
-      'Build 23 Nov 2026, 22:05 · abc1234+'
+      'Build 2026.11.23 22:05 · abc1234+'
     );
   });
 
