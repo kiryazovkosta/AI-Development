@@ -1,0 +1,76 @@
+<dialog
+  #dialog
+  class="coin-dialog"
+  aria-labelledby="commemorative-dialog-title"
+  (close)="close()"
+  (click)="onBackdropClick($event)">
+  @if (coin(); as coin) {
+    <div class="dialog-body">
+      <header class="dialog-header">
+        @if (flagUrl()) {
+          <img class="flag" [src]="flagUrl()" alt="" width="32" height="24" />
+        }
+        <h2 id="commemorative-dialog-title">
+          {{ coin.country }}
+          <span class="denomination">· €2 {{ coin.year }}</span>
+        </h2>
+        <button type="button" class="close-button" (click)="close()" aria-label="Close">
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+        </button>
+      </header>
+
+      <div class="dialog-content">
+        <section class="viewer" aria-label="Coin image">
+          <div class="image-frame" [class.loading]="!imageLoaded()">
+            <img
+              class="coin-full"
+              [src]="coin.image"
+              [alt]="coin.country + ' €2 ' + coin.year + ': ' + coin.feature"
+              width="400"
+              height="400"
+              (load)="imageLoaded.set(true)"
+              (error)="imageLoaded.set(true)" />
+          </div>
+        </section>
+
+        <section class="info">
+          <p class="series-label">{{ coin.joint ? 'Joint issue' : 'Commemorative coin' }}</p>
+          <p class="series-design">{{ coin.feature }}</p>
+
+          <label class="owned-toggle" [class.owned]="isOwned()">
+            <input
+              type="checkbox"
+              [checked]="isOwned()"
+              [disabled]="!service.isLoaded()"
+              (change)="toggleOwned()" />
+            <span>{{ isOwned() ? 'In my collection' : 'Add to my collection' }}</span>
+          </label>
+
+          <dl class="details">
+            <dt>Year</dt>
+            <dd>{{ coin.year }}</dd>
+            @if (coin.issuingDate) {
+              <dt>Issuing date</dt>
+              <dd>{{ coin.issuingDate }}</dd>
+            }
+            @if (coin.issuingVolume) {
+              <dt>Issuing volume</dt>
+              <dd>{{ coin.issuingVolume }}</dd>
+            }
+            @if (coin.joint) {
+              <dt>Issuing volume</dt>
+              <dd>Varies from country to country</dd>
+            }
+          </dl>
+
+          @if (coin.description) {
+            <h3>Description</h3>
+            <p>{{ coin.description }}</p>
+          }
+
+          <p class="source">Images and text: European Central Bank</p>
+        </section>
+      </div>
+    </div>
+  }
+</dialog>

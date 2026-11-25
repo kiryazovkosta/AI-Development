@@ -51,6 +51,13 @@ Coin pictures and texts come from the European Central Bank's euro coin pages.
 
 ---
 
+## €2 commemorative coins
+
+- Signed-in users get a second menu, "€2 Commemorative coins" (`/commemoratives`): every commemorative coin grouped by year, newest first, with a year picker, overall and per-year progress, an owned checkbox on each coin and a details dialog.
+- Each country's version of a joint issue is its own coin. The two newest 2025 coins (Lithuania – Lithuanian Minor, Slovenia – Miki Muster) are left out on purpose for now (`SKIP` in the build script).
+- Data and images are bundled in `public/assets/commemoratives/` (`catalog.json` + `<year>/<id>.webp` and `-thumb.webp`). Regenerate from the ECB export with `python scripts/build-commemorative-catalog.py <EuroCoins/Commemorative dir> .`.
+- Each user's owned coins are stored in the `owned_commemoratives` table (migration `supabase/migrations/20261125120000_owned_commemoratives.sql`, row-level security: own row only). Run the migration before using the menu.
+
 ## Technical Stack
 
 | Layer | Technology |

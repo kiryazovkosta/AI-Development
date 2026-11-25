@@ -16,4 +16,10 @@
       </div>
     }
   </div>
+  @if (authService.isAuthenticated()) {
+    <nav class="header-nav" aria-label="Collections">
+      <a routerLink="/collection" routerLinkActive="active" ariaCurrentWhenActive="page">Euro coins</a>
+      <a routerLink="/commemoratives" routerLinkActive="active" ariaCurrentWhenActive="page">€2 Commemorative coins</a>
+    </nav>
+  }
 </header>
