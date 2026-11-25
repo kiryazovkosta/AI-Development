@@ -32,6 +32,11 @@
       <nav class="drawer-nav" aria-label="Main menu">
         <ng-container [ngTemplateOutlet]="items" />
       </nav>
+      @if (buildInfo; as build) {
+        <p class="build-info">
+          Build {{ build.time | date: 'yyyy.MM.dd HH:mm' }} · {{ build.commit }}
+        </p>
+      }
     </div>
   </dialog>
 }

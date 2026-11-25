@@ -1,4 +1,4 @@
-import { NgTemplateOutlet } from '@angular/common';
+import { DatePipe, NgTemplateOutlet } from '@angular/common';
 import {
   Component,
   ElementRef,
@@ -16,8 +16,10 @@ import {
   RouterLink,
   RouterLinkActive,
 } from '@angular/router';
+import { BUILD_INFO } from '../../build-info';
 import { AuthService } from '../../services/auth.service';
 import { BiometricLoginService } from '../../services/biometric-login.service';
+import { NativePlatform } from '../../services/native/native-adapters';
 
 /**
  * Main menu: a bar on wide screens, a button with a slide-in drawer on narrow ones.
@@ -28,7 +30,7 @@ import { BiometricLoginService } from '../../services/biometric-login.service';
 @Component({
   selector: 'app-menu',
   standalone: true,
-  imports: [NgTemplateOutlet, RouterLink, RouterLinkActive],
+  imports: [DatePipe, NgTemplateOutlet, RouterLink, RouterLinkActive],
   templateUrl: './menu.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './menu.css',
@@ -36,6 +38,8 @@ import { BiometricLoginService } from '../../services/biometric-login.service';
 export class MenuComponent {
   protected readonly authService = inject(AuthService);
   protected readonly biometricLogin = inject(BiometricLoginService);
+  /** Only the mobile app shows it in the menu; null in a browser */
+  protected readonly buildInfo = inject(NativePlatform).isNative ? inject(BUILD_INFO) : null;
   protected readonly togglingFaceId = signal(false);
   protected readonly signingOut = signal(false);
   protected readonly drawerOpen = signal(false);

@@ -6,8 +6,10 @@ import {
 } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
+import { BUILD_INFO } from '../../build-info';
 import { AuthService } from '../../services/auth.service';
 import { BiometricLoginService } from '../../services/biometric-login.service';
+import { NativePlatform } from '../../services/native/native-adapters';
 import { NativeBackButtonService } from '../../services/native-back-button.service';
 import { FakeDevice } from '../../services/native/fake-device.spec';
 import { MenuComponent } from './menu';
@@ -71,6 +73,10 @@ describe('MenuComponent', () => {
             currentUser: signal(null),
           },
         },
+        {
+          provide: BUILD_INFO,
+          useValue: { time: new Date(2026, 10, 25, 21, 33), commit: 'abc1234' },
+        },
         { provide: BiometricLoginService, useValue: { ...biometric, toggleLabel, enabled } },
       ],
     });
@@ -99,6 +105,21 @@ describe('MenuComponent', () => {
     expect(items('.bar-nav')).toEqual(all);
     expect(items('.drawer-nav')).toEqual(all);
   });
+
+  for (const isNative of [true, false]) {
+    it(`${isNative ? 'shows the build in the mobile app' : 'hides the build in a browser'}`, async () => {
+      fixture.destroy();
+      const platform = TestBed.inject(NativePlatform) as { isNative: boolean };
+      const original = platform.isNative;
+      platform.isNative = isNative;
+      fixture = TestBed.createComponent(MenuComponent);
+      platform.isNative = original;
+      await fixture.whenStable();
+      expect(root().querySelector('.build-info')?.textContent?.trim()).toBe(
+        isNative ? 'Build 2026.11.25 21:33 · abc1234' : undefined
+      );
+    });
+  }
 
   it('turns Face ID on and off, leaving the drawer open', async () => {
     toggleLabel.set('Face ID');
