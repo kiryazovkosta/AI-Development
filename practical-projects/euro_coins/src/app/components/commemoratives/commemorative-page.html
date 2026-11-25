@@ -36,7 +36,16 @@
 </div>
 
 @if (service.error(); as error) {
-  <p class="sync-error" role="alert">{{ error }}</p>
+  <div class="sync-banner" role="alert">
+    <span>
+      @if (error === 'load') {
+        Couldn't load your commemorative coins. Check your connection and try again.
+      } @else {
+        Your latest changes aren't saved yet.
+      }
+    </span>
+    <button type="button" class="sync-retry" (click)="service.retry()">Retry</button>
+  </div>
 }
 
 <div class="collection-grid">

@@ -1,3 +1,4 @@
+import { DOCUMENT } from '@angular/common';
 import { Injectable, computed, effect, inject, signal, untracked } from '@angular/core';
 import {
   CommemorativeCatalog,
@@ -5,7 +6,13 @@ import {
   CommemorativeYear,
 } from '../models/coin.models';
 import { AuthService } from './auth.service';
+import { LOAD_RETRY_DELAYS_MS, SAVE_DEBOUNCE_MS, SyncError } from './collection.service';
 import { SupabaseService } from './supabase.service';
+
+interface PendingSave {
+  uid: string;
+  coins: Set<string>;
+}
 
 const CATALOG_URL = 'assets/commemoratives/catalog.json';
 
@@ -19,6 +26,7 @@ const CATALOG_URL = 'assets/commemoratives/catalog.json';
 export class CommemorativeService {
   private readonly supabase = inject(SupabaseService).client;
   private readonly authService = inject(AuthService);
+  private readonly document = inject(DOCUMENT);
 
   private readonly catalog = signal<CommemorativeCoin[]>([]);
   private readonly ownedSet = signal<Set<string>>(new Set());
@@ -26,7 +34,15 @@ export class CommemorativeService {
 
   /** The user whose collection is in ownedSet; null until it has loaded */
   private loadedFor = signal<string | null>(null);
-  private readonly syncError = signal<string | null>(null);
+  private readonly syncError = signal<SyncError | null>(null);
+
+  /** The latest change not stored yet: waiting for the debounce, or its save failed */
+  private pending: PendingSave | null = null;
+  private saveTimer: ReturnType<typeof setTimeout> | null = null;
+  /** Saves run one at a time, so an older snapshot can never land after a newer one */
+  private saveQueue: Promise<void> = Promise.resolve();
+  /** Bumped on every login, logout and retry; a load that finds it changed was superseded */
+  private loadGeneration = 0;
 
   readonly coins = this.catalog.asReadonly();
   readonly error = this.syncError.asReadonly();
@@ -68,13 +84,20 @@ export class CommemorativeService {
     effect(() => {
       const user = this.authService.currentUser();
       if (user) {
-        untracked(() => this.loadCollection(user.uid));
+        untracked(() => void this.loadCollection(user.uid));
       } else if (!this.authService.isLoading()) {
-        this.loadedFor.set(null);
-        this.ownedSet.set(new Set());
-        this.selectedId.set(null);
+        untracked(() => this.reset());
       }
     });
+
+    // Store the last changes before signing out, and when the app goes to the background
+    // (it may never return). Coming back, or back online, tries again what failed.
+    this.authService.onBeforeSignOut(() => this.flush());
+    this.document.addEventListener('visibilitychange', () => {
+      if (this.document.visibilityState === 'hidden') void this.flush();
+      else this.retry();
+    });
+    this.document.defaultView?.addEventListener('online', () => this.retry());
   }
 
   isOwned(id: string): boolean {
@@ -105,42 +128,86 @@ export class CommemorativeService {
     this.selectedId.set(null);
   }
 
-  private saveTimer: ReturnType<typeof setTimeout> | null = null;
-
-  private scheduleSave(uid: string, coins: Set<string>): void {
+  /** Saves any change still waiting and resolves once every save is done */
+  flush(): Promise<void> {
     if (this.saveTimer) clearTimeout(this.saveTimer);
-    this.saveTimer = setTimeout(() => this.save(uid, coins), 500);
+    this.saveTimer = null;
+    const pending = this.pending;
+    this.pending = null;
+    if (pending) this.saveQueue = this.saveQueue.then(() => this.save(pending));
+    return this.saveQueue;
   }
 
-  private async save(uid: string, coins: Set<string>): Promise<void> {
-    const { error } = await this.supabase.from('owned_commemoratives').upsert({
-      user_id: uid,
-      coin_ids: Array.from(coins),
-      last_updated: new Date().toISOString(),
-    });
-    if (error) {
+  /** Tries a failed load or save again */
+  retry(): void {
+    const user = this.authService.currentUser();
+    if (!user) return;
+    if (this.syncError() === 'load') void this.loadCollection(user.uid);
+    else if (this.syncError() === 'save') void this.flush();
+  }
+
+  private scheduleSave(uid: string, coins: Set<string>): void {
+    this.pending = { uid, coins };
+    if (this.saveTimer) clearTimeout(this.saveTimer);
+    this.saveTimer = setTimeout(() => void this.flush(), SAVE_DEBOUNCE_MS);
+  }
+
+  private async save(change: PendingSave): Promise<void> {
+    try {
+      const { error } = await this.supabase.from('owned_commemoratives').upsert({
+        user_id: change.uid,
+        coin_ids: Array.from(change.coins),
+        last_updated: new Date().toISOString(),
+      });
+      if (error) throw error;
+      if (this.loadedFor() === change.uid) this.syncError.set(null);
+    } catch (error) {
       console.error('Failed to save commemorative coins:', error);
-      this.syncError.set('Your changes could not be saved. Please try again later.');
-    } else {
-      this.syncError.set(null);
+      if (this.loadedFor() !== change.uid) return;
+      // Kept for the next try, unless a newer change already waits
+      this.pending ??= change;
+      this.syncError.set('save');
     }
   }
 
   private async loadCollection(uid: string): Promise<void> {
     if (this.loadedFor() === uid) return;
-    const { data, error } = await this.supabase
-      .from('owned_commemoratives')
-      .select('coin_ids')
-      .eq('user_id', uid)
-      .maybeSingle();
-    if (error) {
-      console.error('Failed to load commemorative coins:', error);
-      this.syncError.set('Your commemorative coins could not be loaded.');
-      return;
+    this.reset();
+    const generation = this.loadGeneration;
+    for (let attempt = 0; ; attempt++) {
+      try {
+        const { data, error } = await this.supabase
+          .from('owned_commemoratives')
+          .select('coin_ids')
+          .eq('user_id', uid)
+          .maybeSingle();
+        if (error) throw error;
+        if (generation !== this.loadGeneration) return;
+        this.ownedSet.set(new Set((data?.coin_ids as string[] | null | undefined) ?? []));
+        this.loadedFor.set(uid);
+        return;
+      } catch (error) {
+        if (generation !== this.loadGeneration) return;
+        console.error('Failed to load commemorative coins:', error);
+        if (attempt >= LOAD_RETRY_DELAYS_MS.length) {
+          this.syncError.set('load');
+          return;
+        }
+        await new Promise((resolve) => setTimeout(resolve, LOAD_RETRY_DELAYS_MS[attempt]));
+        if (generation !== this.loadGeneration) return;
+      }
     }
+  }
+
+  private reset(): void {
+    this.loadGeneration++;
+    if (this.saveTimer) clearTimeout(this.saveTimer);
+    this.saveTimer = null;
+    this.pending = null;
+    this.loadedFor.set(null);
+    this.ownedSet.set(new Set());
+    this.selectedId.set(null);
     this.syncError.set(null);
-    this.ownedSet.set(new Set((data?.coin_ids as string[] | null) ?? []));
-    this.loadedFor.set(uid);
   }
 
   private async loadCatalog(): Promise<void> {

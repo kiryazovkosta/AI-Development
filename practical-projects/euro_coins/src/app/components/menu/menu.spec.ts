@@ -81,16 +81,16 @@ describe('MenuComponent', () => {
     expect(root().querySelector('button')).toBeNull();
   });
 
-  it('shows Home and Sign Out to everyone, in the bar and in the drawer', () => {
-    expect(items('.bar-nav')).toEqual(['Home', 'Sign Out']);
-    expect(items('.drawer-nav')).toEqual(['Home', 'Sign Out']);
+  it('shows Home, Commemoratives and Sign Out to everyone, in the bar and in the drawer', () => {
+    expect(items('.bar-nav')).toEqual(['Home', 'Commemoratives', 'Sign Out']);
+    expect(items('.drawer-nav')).toEqual(['Home', 'Commemoratives', 'Sign Out']);
   });
 
   it('shows Create User to administrators and Face ID where it is available', async () => {
     isAdmin.set(true);
     toggleLabel.set('Face ID');
     await fixture.whenStable();
-    const all = ['Home', 'Create User', 'Turn On Face ID', 'Sign Out'];
+    const all = ['Home', 'Commemoratives', 'Create User', 'Turn On Face ID', 'Sign Out'];
     expect(items('.bar-nav')).toEqual(all);
     expect(items('.drawer-nav')).toEqual(all);
   });
