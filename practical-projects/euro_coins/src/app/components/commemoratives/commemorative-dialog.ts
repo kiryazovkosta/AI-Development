@@ -1,4 +1,13 @@
-import { Component, ElementRef, computed, effect, inject, signal, viewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  computed,
+  effect,
+  inject,
+  signal,
+  viewChild,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { CoinDataService } from '../../services/coin-data.service';
 import { CommemorativeService } from '../../services/commemorative.service';
 
@@ -7,6 +16,7 @@ import { CommemorativeService } from '../../services/commemorative.service';
   selector: 'app-commemorative-dialog',
   standalone: true,
   templateUrl: './commemorative-dialog.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['../coin-dialog/coin-dialog.css', './commemorative-dialog.css'],
 })
 export class CommemorativeDialogComponent {

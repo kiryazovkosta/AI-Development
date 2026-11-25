@@ -11,7 +11,7 @@
 
 | Инструмент | Версия | Бележка |
 |---|---|---|
-| Node.js | **22 или по-нова** | Capacitor 8 не тръгва на Node 20. Провери с `node -v`. |
+| Node.js | **22.22.3+ или 24.15+** | Angular 22 и Capacitor 8 не тръгват на по-стар Node. Провери с `node -v`. |
 | Android Studio | последната стабилна (Otter или по-нова) | Изтегли от https://developer.android.com/studio. Включва JDK 21, не е нужна отделна Java. |
 | Android SDK | Platform 36 + Build-Tools | Android Studio ги предлага при първото пускане (Setup Wizard → Standard). |
 | Телефон | Android 7+ | За инсталиране през USB: включен „USB debugging“ (виж т. 5). |
@@ -143,7 +143,7 @@ npm run cap:assets
 
 | Симптом | Решение |
 |---|---|
-| `npx cap ...` пише, че Node е стар | Инсталирай Node 22 LTS или по-нов. |
+| `npx cap ...` пише, че Node е стар | Инсталирай Node 24 LTS (или 22.22.3+). |
 | `SDK location not found` | Отвори проекта веднъж в Android Studio, той създава `android/local.properties`. Или създай файла ръчно: на Windows `sdk.dir=C\:\\Users\\kosta\\AppData\\Local\\Android\\Sdk`, на macOS `sdk.dir=/Users/<потребител>/Library/Android/sdk`. |
 | Бял екран след стартиране | Не си пуснал `npm run build` преди `npx cap sync`, или липсва `environment.prod.ts`. Пусни `npm run android` отново. |
 | Вписването не работи | Провери Supabase URL и anon key в `src/environments/environment.prod.ts`. |

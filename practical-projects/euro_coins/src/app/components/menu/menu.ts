@@ -1,7 +1,21 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { Component, ElementRef, effect, inject, signal, viewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  effect,
+  inject,
+  signal,
+  viewChild,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { NavigationSkipped, NavigationStart, Router, RouterLink, RouterLinkActive } from '@angular/router';
+import {
+  NavigationSkipped,
+  NavigationStart,
+  Router,
+  RouterLink,
+  RouterLinkActive,
+} from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { BiometricLoginService } from '../../services/biometric-login.service';
 
@@ -16,6 +30,7 @@ import { BiometricLoginService } from '../../services/biometric-login.service';
   standalone: true,
   imports: [NgTemplateOutlet, RouterLink, RouterLinkActive],
   templateUrl: './menu.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './menu.css',
 })
 export class MenuComponent {

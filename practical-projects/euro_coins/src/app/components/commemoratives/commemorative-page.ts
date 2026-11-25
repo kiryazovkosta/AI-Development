@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommemorativeYear } from '../../models/coin.models';
 import { CommemorativeService } from '../../services/commemorative.service';
@@ -12,6 +12,7 @@ import { CommemorativeDialogComponent } from './commemorative-dialog';
   standalone: true,
   imports: [CommemorativeCardComponent, CommemorativeDialogComponent, BackToTop],
   templateUrl: './commemorative-page.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: [
     '../collection-stats/collection-stats.css',
     '../collection-grid/collection-grid.css',
@@ -27,7 +28,8 @@ export class CommemorativePageComponent {
   private readonly pickedYear = signal<number | null>(null);
 
   protected readonly selectedYear = computed<CommemorativeYear | undefined>(
-    () => this.service.years().find((y) => y.year === this.pickedYear()) ?? this.service.years().at(0)
+    () =>
+      this.service.years().find((y) => y.year === this.pickedYear()) ?? this.service.years().at(0)
   );
 
   protected readonly selectedYearOwned = computed(() => {

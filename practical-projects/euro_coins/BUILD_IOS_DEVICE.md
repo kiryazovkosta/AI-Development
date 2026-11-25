@@ -38,7 +38,7 @@ git pull
 npm install
 ```
 
-Нужни са Node 22+ и двата файла `src/environments/environment.ts` и `environment.prod.ts` (Supabase URL и anon key; не са в git).
+Нужни са Node 22.22.3+ (или 24.15+) и двата файла `src/environments/environment.ts` и `environment.prod.ts` (Supabase URL и anon key; не са в git).
 
 ### 1.3 [Xcode] Apple ID (единствената стъпка в прозореца на Xcode)
 

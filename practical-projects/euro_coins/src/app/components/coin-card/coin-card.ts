@@ -1,4 +1,4 @@
-import { Component, inject, input, computed } from '@angular/core';
+import { Component, inject, input, computed, ChangeDetectionStrategy } from '@angular/core';
 import { Denomination } from '../../models/coin.models';
 import { CoinCatalogService } from '../../services/coin-catalog.service';
 import { CoinDataService } from '../../services/coin-data.service';
@@ -8,7 +8,8 @@ import { CollectionService } from '../../services/collection.service';
   selector: 'app-coin-card',
   standalone: true,
   templateUrl: './coin-card.html',
-  styleUrl: './coin-card.css'
+  changeDetection: ChangeDetectionStrategy.Eager,
+  styleUrl: './coin-card.css',
 })
 export class CoinCardComponent {
   readonly countryCode = input.required<string>();

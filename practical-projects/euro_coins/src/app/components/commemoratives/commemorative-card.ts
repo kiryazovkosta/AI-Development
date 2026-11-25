@@ -1,4 +1,4 @@
-import { Component, computed, inject, input } from '@angular/core';
+import { Component, computed, inject, input, ChangeDetectionStrategy } from '@angular/core';
 import { CommemorativeCoin } from '../../models/coin.models';
 import { CoinDataService } from '../../services/coin-data.service';
 import { CommemorativeService } from '../../services/commemorative.service';
@@ -8,6 +8,7 @@ import { CommemorativeService } from '../../services/commemorative.service';
   selector: 'app-commemorative-card',
   standalone: true,
   templateUrl: './commemorative-card.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['../coin-card/coin-card.css', './commemorative-card.css'],
 })
 export class CommemorativeCardComponent {
