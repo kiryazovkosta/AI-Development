@@ -38,6 +38,7 @@
 
 <ng-template #items>
   <a class="menu-item" routerLink="/collection" routerLinkActive="active" ariaCurrentWhenActive="page">Home</a>
+  <a class="menu-item" routerLink="/commemoratives" routerLinkActive="active" ariaCurrentWhenActive="page">€2 Commemoratives</a>
   @if (authService.isAdmin()) {
     <a class="menu-item" routerLink="/users/new" routerLinkActive="active" ariaCurrentWhenActive="page">Create User</a>
   }

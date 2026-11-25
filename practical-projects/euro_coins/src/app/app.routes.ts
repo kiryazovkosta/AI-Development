@@ -22,6 +22,14 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: 'commemoratives',
+    loadComponent: () =>
+      import('./components/commemoratives/commemorative-page').then(
+        (m) => m.CommemorativePageComponent
+      ),
+    canActivate: [authGuard],
+  },
+  {
     path: '',
     redirectTo: 'collection',
     pathMatch: 'full',

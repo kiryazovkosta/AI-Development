@@ -1,0 +1,14 @@
+.dialog-content {
+  grid-template-columns: minmax(0, 400px) minmax(0, 1fr);
+}
+
+.coin-full {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+@media (max-width: 760px) {
+  .dialog-content {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
