@@ -73,3 +73,34 @@
   background: #6fd3c5;
   border-color: #6fd3c5;
 }
+
+/* Switches between the regular coins and the €2 commemorative coins */
+.header-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  max-width: 1400px;
+  margin: var(--spacing-lg) auto 0;
+}
+
+.header-nav a {
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: white;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background var(--transition-fast);
+}
+
+.header-nav a:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.header-nav a.active {
+  background: white;
+  border-color: white;
+  color: var(--color-primary);
+  font-weight: 600;
+}

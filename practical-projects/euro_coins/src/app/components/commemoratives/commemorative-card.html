@@ -1,0 +1,31 @@
+<div class="coin-card" [class.owned]="isOwned()" [title]="coin().feature">
+  <button
+    type="button"
+    class="coin-image-button"
+    (click)="onOpen()"
+    [attr.aria-label]="'Show details for ' + altText()">
+    <img
+      [src]="coin().thumb"
+      [alt]="altText()"
+      class="coin-image"
+      width="80"
+      height="80"
+      loading="lazy"
+      (error)="onImageError($event)" />
+    @if (coin().joint) {
+      <span class="joint-badge" title="Joint issue">J</span>
+    }
+    <span class="zoom-hint" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="14" height="14"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M15.5 15.5 21 21" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+    </span>
+  </button>
+  <label class="coin-label">
+    <input
+      type="checkbox"
+      [checked]="isOwned()"
+      [disabled]="!canToggle()"
+      [attr.aria-label]="'I own ' + altText()"
+      (change)="onToggle()" />
+    <span class="denomination-text">{{ coin().country }}</span>
+  </label>
+</div>
