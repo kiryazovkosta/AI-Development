@@ -1,5 +1,5 @@
 import { ViewportScroller } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CoinDataService } from '../../services/coin-data.service';
 import { CollectionService } from '../../services/collection.service';
 
@@ -7,6 +7,7 @@ import { CollectionService } from '../../services/collection.service';
   selector: 'app-collection-stats',
   standalone: true,
   templateUrl: './collection-stats.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './collection-stats.css',
 })
 export class CollectionStatsComponent {

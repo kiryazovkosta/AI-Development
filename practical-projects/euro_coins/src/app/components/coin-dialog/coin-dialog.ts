@@ -7,6 +7,7 @@ import {
   signal,
   untracked,
   viewChild,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import { CoinCatalogService } from '../../services/coin-catalog.service';
 import { CoinDataService } from '../../services/coin-data.service';
@@ -21,6 +22,7 @@ import { CollectionService } from '../../services/collection.service';
   selector: 'app-coin-dialog',
   standalone: true,
   templateUrl: './coin-dialog.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './coin-dialog.css',
 })
 export class CoinDialogComponent {
@@ -49,7 +51,7 @@ export class CoinDialogComponent {
 
   protected readonly denominationLabel = computed(() => {
     const value = this.coin()?.denomination;
-    return value ? (this.coinDataService.getDenominationByValue(value)?.label ?? value) : '';
+    return value ? this.coinDataService.getDenominationByValue(value)?.label ?? value : '';
   });
 
   protected readonly issuerDescription = computed(() =>

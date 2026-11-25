@@ -1,4 +1,9 @@
-import { Component, provideZonelessChangeDetection, signal } from '@angular/core';
+import {
+  Component,
+  provideZonelessChangeDetection,
+  signal,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
@@ -7,7 +12,7 @@ import { NativeBackButtonService } from '../../services/native-back-button.servi
 import { FakeDevice } from '../../services/native/fake-device.spec';
 import { MenuComponent } from './menu';
 
-@Component({ template: '' })
+@Component({ changeDetection: ChangeDetectionStrategy.Eager, template: '' })
 class BlankPage {}
 
 describe('MenuComponent', () => {

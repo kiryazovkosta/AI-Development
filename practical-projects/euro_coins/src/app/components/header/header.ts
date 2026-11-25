@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { MenuComponent } from '../menu/menu';
 
 @Component({
@@ -6,6 +6,7 @@ import { MenuComponent } from '../menu/menu';
   standalone: true,
   imports: [MenuComponent],
   templateUrl: './header.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './header.css',
 })
 export class HeaderComponent {}

@@ -1,4 +1,12 @@
-import { Component, ElementRef, effect, inject, signal, viewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  effect,
+  inject,
+  signal,
+  viewChild,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { AppLockService } from '../../services/native/app-lock.service';
 
@@ -10,6 +18,7 @@ import { AppLockService } from '../../services/native/app-lock.service';
   selector: 'app-lock-screen',
   standalone: true,
   templateUrl: './lock-screen.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './lock-screen.css',
 })
 export class LockScreenComponent {
