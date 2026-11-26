@@ -1,0 +1,71 @@
+<div class="stats-container">
+  <div class="stat-card select-card">
+    <select
+      name="navigate-to-year"
+      id="navigate-to-year"
+      title="Go to year"
+      aria-label="Go to year"
+      (change)="onYearSelect($any($event.target).value)">
+      @for (y of service.years(); track y.year) {
+        <option [value]="y.year" [selected]="y.year === selectedYear()?.year">
+          {{ y.year }} ({{ y.coins.length }} coins)
+        </option>
+      }
+    </select>
+  </div>
+  <div class="stat-card progress-card">
+    <span class="stat-value">
+      {{ service.ownedCount() }}<span class="stat-total"> / {{ service.totalCount() }}</span>
+    </span>
+    <span class="stat-label">All commemorative coins</span>
+    <div class="progress-bar">
+      <div class="progress-fill" [style.width.%]="service.progress()"></div>
+    </div>
+    <span class="stat-percent">{{ service.progress() }}% complete</span>
+  </div>
+  <div class="stat-card progress-card">
+    <span class="stat-value">
+      {{ selectedYearOwned() }}<span class="stat-total"> / {{ selectedYear()?.coins?.length ?? 0 }}</span>
+    </span>
+    <span class="stat-label">Coins from {{ selectedYear()?.year }}</span>
+    <div class="progress-bar">
+      <div class="progress-fill" [style.width.%]="selectedYearProgress()"></div>
+    </div>
+    <span class="stat-percent">{{ selectedYearProgress() }}% complete</span>
+  </div>
+</div>
+
+@if (service.error(); as error) {
+  <div class="sync-banner" role="alert">
+    <span>
+      @if (error === 'load') {
+        Couldn't load your commemorative coins. Check your connection and try again.
+      } @else {
+        Your latest changes aren't saved yet.
+      }
+    </span>
+    <button type="button" class="sync-retry" (click)="service.retry()">Retry</button>
+  </div>
+}
+
+<div class="collection-grid">
+  @for (y of service.years(); track y.year) {
+    <section class="country-section" [id]="anchor(y.year)">
+      <header class="country-header">
+        <h2 class="country-name">{{ y.year }}</h2>
+        <span class="country-progress">{{ service.ownedInYear(y) }}/{{ y.coins.length }}</span>
+      </header>
+      <div class="coins-row">
+        @for (coin of y.coins; track coin.id) {
+          <app-commemorative-card [coin]="coin" />
+        }
+      </div>
+    </section>
+  } @empty {
+    <p class="empty">Loading commemorative coins…</p>
+  }
+</div>
+
+<app-back-to-top [scrollThreshold]="200" [pulseDuration]="2000" [focusDelay]="1000" />
+
+<app-commemorative-dialog />

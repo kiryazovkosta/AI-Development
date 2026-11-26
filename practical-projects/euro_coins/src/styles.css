@@ -26,6 +26,32 @@
 
   --transition-fast: 150ms ease;
   --transition-normal: 250ms ease;
+
+  /* What the clock, camera, rounded corners and home indicator take up. All 0 in a desktop
+     browser and in an upright phone browser; used by the native app and landscape phones. */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+
+  /* For a centred dialog: the same distance on opposite sides, whichever is larger */
+  --dialog-max-height: calc(100dvh - 2 * max(16px, var(--safe-top), var(--safe-bottom)));
+  --dialog-max-width: calc(100vw - 2 * max(16px, var(--safe-left), var(--safe-right)));
+}
+
+html {
+  /* Also used for "Jump to country", see app.ts */
+  scroll-padding-top: var(--safe-top);
+}
+
+/* Keeps the page from showing through behind the clock while scrolling */
+body::before {
+  content: '';
+  position: fixed;
+  z-index: 900;
+  inset: 0 0 auto;
+  height: var(--safe-top);
+  background: var(--color-primary);
 }
 
 * {

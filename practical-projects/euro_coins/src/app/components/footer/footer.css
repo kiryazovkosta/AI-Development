@@ -1,7 +1,8 @@
 .app-footer {
   background: linear-gradient(135deg, var(--color-primary) 0%, #147a9c 100%);
   color: white;
-  padding: var(--spacing-md) var(--spacing-md);
+  padding: var(--spacing-md) max(var(--spacing-md), var(--safe-right))
+    max(var(--spacing-md), var(--safe-bottom)) max(var(--spacing-md), var(--safe-left));
   text-align: center;
   /* margin-bottom: var(--spacing-lg); */
 }
@@ -10,4 +11,10 @@
   margin: 0;
   font-size: 1.2rem;
   font-weight: bold;
+}
+
+.app-footer .build-info {
+  margin-top: var(--spacing-xs);
+  font-size: 0.8125rem;
+  font-weight: normal;
 }

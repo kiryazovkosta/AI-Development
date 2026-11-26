@@ -1,7 +1,11 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { FunctionsHttpError, User } from '@supabase/supabase-js';
+import { AppLockService } from './native/app-lock.service';
+import { SecureSessionStorage } from './native/secure-session-storage.service';
 import { SupabaseService } from './supabase.service';
+
+const BEFORE_SIGN_OUT_TIMEOUT_MS = 3000;
 
 export interface AuthUser {
   uid: string;
@@ -26,6 +30,8 @@ export interface NewUser {
 export class AuthService {
   private readonly supabase = inject(SupabaseService).client;
   private readonly router = inject(Router);
+  private readonly appLock = inject(AppLockService);
+  private readonly sessionStorage = inject(SecureSessionStorage);
 
   private readonly currentUserSignal = signal<User | null>(null);
   private readonly loadingSignal = signal<boolean>(true);
@@ -33,6 +39,7 @@ export class AuthService {
   private readonly errorSignal = signal<AuthError | null>(null);
   private readonly displayNameSignal = signal<string | null>(null);
   private readonly rolesSignal = signal<string[]>([]);
+  private readonly beforeSignOutTasks: (() => Promise<void>)[] = [];
 
   readonly currentUser = computed<AuthUser | null>(() => {
     const user = this.currentUserSignal();
@@ -65,8 +72,12 @@ export class AuthService {
     });
   }
 
-  hasRole(role: string): boolean {
-    return this.rolesSignal().includes(role);
+  /**
+   * Registers work that must finish while the session is still valid, such as saving the
+   * last changes. Sign-out waits for it, but never longer than BEFORE_SIGN_OUT_TIMEOUT_MS.
+   */
+  onBeforeSignOut(task: () => Promise<void>): void {
+    this.beforeSignOutTasks.push(task);
   }
 
   async login(email: string, password: string): Promise<boolean> {
@@ -104,8 +115,26 @@ export class AuthService {
 
   async logout(): Promise<void> {
     this.errorSignal.set(null);
-    await this.supabase.auth.signOut();
+    await Promise.race([
+      Promise.allSettled(this.beforeSignOutTasks.map((task) => task())),
+      new Promise((resolve) => setTimeout(resolve, BEFORE_SIGN_OUT_TIMEOUT_MS)),
+    ]);
+    // Only this device: supabase-js signs out everywhere by default
+    await this.supabase.auth.signOut({ scope: 'local' });
     this.router.navigate(['/login']);
+  }
+
+  /**
+   * Native app: leaves the lock screen without unlocking, by dropping the session on this
+   * device. Needs no network. The content stays covered until the session is gone.
+   */
+  async signOutLocal(): Promise<void> {
+    this.errorSignal.set(null);
+    await this.sessionStorage.discard();
+    // Finds no stored session any more, so it only tells the app that the user is signed out
+    await this.supabase.auth.signOut({ scope: 'local' });
+    await this.router.navigate(['/login']);
+    this.appLock.release(false);
   }
 
   clearError(): void {

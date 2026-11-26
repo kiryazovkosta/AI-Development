@@ -1,9 +1,18 @@
-import { Component, ElementRef, HostListener, inject, input, Input, signal, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  HostListener,
+  input,
+  signal,
+  ViewChild,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 
 @Component({
   selector: 'app-back-to-top',
   imports: [],
   templateUrl: './back-to-top.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './back-to-top.css',
 })
 export class BackToTop {
@@ -27,7 +36,8 @@ export class BackToTop {
     }
     this.lastScrollTime = now;
 
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+    const scrollTop =
+      window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
 
     if (scrollTop > this.scrollThreshold()) {
       if (!this.isVisible()) {
@@ -58,17 +68,13 @@ export class BackToTop {
 
     window.scrollTo({
       top: 0,
-      behavior: 'smooth'
+      behavior: 'smooth',
     });
 
     setTimeout(() => {
-      const header = document.querySelector('.header') as HTMLElement;
-      if (header) {
-        header.focus();
-      } else {
-        console.warn('Header element not found for focus after scroll to top.');
-      }
-    }, (this.focusDelay()));
+      // The page title has tabindex="-1", so it can take focus without joining the tab order
+      document.querySelector<HTMLElement>('.app-header h1')?.focus({ preventScroll: true });
+    }, this.focusDelay());
   }
 
   onKeyDown(event: KeyboardEvent) {

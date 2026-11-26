@@ -1,0 +1,16 @@
+:host {
+  display: block;
+}
+
+.stats-container {
+  margin-bottom: var(--spacing-xl);
+}
+
+.country-section {
+  scroll-margin-top: var(--spacing-md);
+}
+
+.empty {
+  color: var(--color-text-muted);
+  text-align: center;
+}

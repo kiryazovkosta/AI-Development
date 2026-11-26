@@ -1,43 +1,76 @@
 <div class="auth-container">
   <div class="auth-card">
-    <h1>Sign In</h1>
-    <p class="auth-subtitle">Sign in to your Euro Coin Collection</p>
+    @if (offer()) {
+      <h1>Use {{ biometricLogin.name() }}?</h1>
+      <p class="auth-subtitle">
+        {{ biometricLogin.name() }} will unlock the app and sign you in. Your password is kept in
+        this device's secure storage and never leaves it, except to sign in.
+      </p>
 
-    @if (authError()) {
-      <div class="error-message">{{ authError()!.message }}</div>
-    }
+      @if (biometricMessage()) {
+        <div class="error-message" role="alert">{{ biometricMessage() }}</div>
+      }
 
-    <form (ngSubmit)="onSubmit()">
-      <div class="form-group">
-        <label for="email">Email</label>
-        <input
-          id="email"
-          type="email"
-          [ngModel]="email()"
-          (ngModelChange)="email.set($event)"
-          name="email"
-          required
-          placeholder="your@email.com" />
-      </div>
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input
-          id="password"
-          type="password"
-          [ngModel]="password()"
-          (ngModelChange)="password.set($event)"
-          name="password"
-          required
-          placeholder="Your password" 
-          autocomplete="on" />
-      </div>
-      <button type="submit" class="btn-primary" [disabled]="isLoading()">
-        @if (isLoading()) {
-          Signing in...
-        } @else {
-          Sign In
-        }
+      <button type="button" class="btn-primary" [disabled]="busy()" (click)="acceptOffer()">
+        Use {{ biometricLogin.name() }}
       </button>
-    </form>
+      <button type="button" class="btn-secondary" [disabled]="busy()" (click)="declineOffer()">
+        Not now
+      </button>
+    } @else {
+      <h1>Sign In</h1>
+      <p class="auth-subtitle">Sign in to your Euro Coin Collection</p>
+
+      @if (biometricMessage()) {
+        <div class="error-message" role="alert">{{ biometricMessage() }}</div>
+      }
+
+      @if (authError()) {
+        <div class="error-message">{{ authError()!.message }}</div>
+      }
+
+      <form (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input
+            id="email"
+            type="email"
+            [ngModel]="email()"
+            (ngModelChange)="email.set($event)"
+            name="email"
+            required
+            placeholder="your@email.com" />
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input
+            id="password"
+            type="password"
+            [ngModel]="password()"
+            (ngModelChange)="password.set($event)"
+            name="password"
+            required
+            placeholder="Your password" 
+            autocomplete="on" />
+        </div>
+        <button type="submit" class="btn-primary" [disabled]="isLoading()">
+          @if (isLoading()) {
+            Signing in...
+          } @else {
+            Sign In
+          }
+        </button>
+      </form>
+
+      @if (biometricLogin.name() && biometricLogin.hasSaved()) {
+        <button
+          type="button"
+          class="btn-secondary"
+          [disabled]="isLoading() || busy()"
+          (click)="onBiometricSignIn()">
+          Sign in with {{ biometricLogin.name() }}
+        </button>
+      }
+    }
   </div>
 </div>

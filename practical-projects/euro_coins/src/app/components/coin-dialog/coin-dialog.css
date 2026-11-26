@@ -1,6 +1,6 @@
 .coin-dialog {
-  width: min(960px, calc(100vw - 32px));
-  max-height: calc(100dvh - 32px);
+  width: min(960px, var(--dialog-max-width));
+  max-height: var(--dialog-max-height);
   margin: auto;
   padding: 0;
   border: none;
@@ -30,7 +30,7 @@
 .dialog-body {
   display: flex;
   flex-direction: column;
-  max-height: calc(100dvh - 32px);
+  max-height: var(--dialog-max-height);
 }
 
 .dialog-header {

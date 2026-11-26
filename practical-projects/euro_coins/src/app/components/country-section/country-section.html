@@ -1,7 +1,6 @@
-<section class="country-section" id="{{country().name}}">
+<section class="country-section" [id]="country().code">
   <header class="country-header">
     <img
-      alt="country-flag-image"
       [src]="coinDataService.getCountryFlagUrl(country().code)"
       [alt]="country().name + ' flag'"
       class="country-flag" />

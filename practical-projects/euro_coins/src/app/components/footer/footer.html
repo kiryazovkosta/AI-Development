@@ -1,3 +1,10 @@
 <footer class="app-footer">
     <p>Created by Kosta Kiryazov</p>
+    <p class="build-info">
+      @if (buildInfo; as build) {
+        Build {{ build.time | date: 'yyyy.MM.dd HH:mm' }} · {{ build.commit }}
+      } @else {
+        Development build
+      }
+    </p>
 </footer>

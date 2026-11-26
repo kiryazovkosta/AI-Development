@@ -30,6 +30,7 @@
     <input
       type="checkbox"
       [checked]="isOwned()"
+      [disabled]="!canEdit()"
       [indeterminate]="hasManySeries() && hasAnySeries() && !isOwned()"
       [attr.aria-label]="hasManySeries() ? 'Choose series of ' + altText() : null"
       [title]="hasManySeries() ? 'Choose the series you own' : ''"

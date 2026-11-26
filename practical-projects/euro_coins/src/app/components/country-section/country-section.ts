@@ -1,4 +1,4 @@
-import { Component, inject, input, computed } from '@angular/core';
+import { Component, inject, input, computed, ChangeDetectionStrategy } from '@angular/core';
 import { Country } from '../../models/coin.models';
 import { CoinCatalogService } from '../../services/coin-catalog.service';
 import { CoinDataService } from '../../services/coin-data.service';
@@ -10,7 +10,8 @@ import { CoinCardComponent } from '../coin-card/coin-card';
   standalone: true,
   imports: [CoinCardComponent],
   templateUrl: './country-section.html',
-  styleUrl: './country-section.css'
+  changeDetection: ChangeDetectionStrategy.Eager,
+  styleUrl: './country-section.css',
 })
 export class CountrySectionComponent {
   readonly country = input.required<Country>();
@@ -22,9 +23,9 @@ export class CountrySectionComponent {
   protected readonly denominations = computed(() => this.coinDataService.denominations());
 
   protected readonly collectedForCountry = computed(() => {
-    return this.coinDataService.denominations().filter(d =>
-      this.collectionService.hasCoin(this.country().code, d.value)
-    ).length;
+    return this.coinDataService
+      .denominations()
+      .filter((d) => this.collectionService.hasCoin(this.country().code, d.value)).length;
   });
 
   protected readonly seriesProgress = computed(() => {

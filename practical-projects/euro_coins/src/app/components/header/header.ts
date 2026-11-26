@@ -1,18 +1,12 @@
-import { Component, inject } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { MenuComponent } from '../menu/menu';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [RouterLink],
+  imports: [MenuComponent],
   templateUrl: './header.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './header.css',
 })
-export class HeaderComponent {
-  protected readonly authService = inject(AuthService);
-
-  protected async onLogout(): Promise<void> {
-    await this.authService.logout();
-  }
-}
+export class HeaderComponent {}

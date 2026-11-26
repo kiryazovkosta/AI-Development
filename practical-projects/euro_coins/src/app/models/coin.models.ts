@@ -15,20 +15,6 @@ export interface Country {
   joinYear: number;
 }
 
-export interface CollectionState {
-  ownedCoins: string[];
-  lastUpdated: string;
-}
-
-export interface CollectedCoins {
-  country: string;
-  coins: string[];
-}
-
-export interface OwnedCoins {
-  collected: CollectedCoins[];
-}
-
 export interface CoinSeries {
   seriesNo: number;
   years: string;
@@ -60,4 +46,29 @@ export interface CoinCatalog {
 export interface SelectedCoin {
   countryCode: string;
   denomination: Denomination;
+}
+
+/** One €2 commemorative coin. Each country's version of a joint issue is its own coin. */
+export interface CommemorativeCoin {
+  /** Stable id stored in the user's collection, e.g. "2025-mc-marquisat-des-baux" */
+  id: string;
+  year: number;
+  countryCode: string;
+  country: string;
+  feature: string;
+  issuingDate: string | null;
+  issuingVolume: string | null;
+  description: string | null;
+  joint: boolean;
+  image: string;
+  thumb: string;
+}
+
+export interface CommemorativeCatalog {
+  coins: CommemorativeCoin[];
+}
+
+export interface CommemorativeYear {
+  year: number;
+  coins: CommemorativeCoin[];
 }
