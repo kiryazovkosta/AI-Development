@@ -12,11 +12,17 @@ jobs:
       - name: Query countries table
         env:
           SUPABASE_URL: ${{ secrets.EURO_COINS_SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ secrets.EURO_COINS_SUPABASE_ANON_KEY }}
+          # Publishable key (sb_publishable_...); the legacy anon key secret is the fallback
+          SUPABASE_KEY: ${{ secrets.EURO_COINS_SUPABASE_PUBLISHABLE_KEY || secrets.EURO_COINS_SUPABASE_ANON_KEY }}
         run: |
+          # New keys are not JWTs: they go only in the apikey header. The legacy anon key is a JWT
+          # and also goes in Authorization.
+          auth=()
+          case "$SUPABASE_KEY" in
+            eyJ*) auth=(-H "Authorization: Bearer $SUPABASE_KEY") ;;
+          esac
           status=$(curl -s -o /dev/null -w "%{http_code}" \
             "$SUPABASE_URL/rest/v1/countries?select=id&limit=1" \
-            -H "apikey: $SUPABASE_ANON_KEY" \
-            -H "Authorization: Bearer $SUPABASE_ANON_KEY")
+            -H "apikey: $SUPABASE_KEY" "${auth[@]}")
           echo "HTTP $status"
           test "$status" = "200"
