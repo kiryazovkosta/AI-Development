@@ -8,6 +8,26 @@ const cors = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
+/**
+ * The project's default API key of a kind. Prefers the new keys (Supabase retires the legacy
+ * anon / service_role keys in early 2027), which the platform provides as JSON maps by name,
+ * and falls back to the legacy key while the project still has it.
+ */
+function apiKey(kind: 'publishable' | 'secret'): string {
+  const keys = Deno.env.get(kind === 'publishable' ? 'SUPABASE_PUBLISHABLE_KEYS' : 'SUPABASE_SECRET_KEYS');
+  if (keys) {
+    try {
+      const value = (JSON.parse(keys) as Record<string, string>)['default'];
+      if (value) return value;
+    } catch {
+      // Malformed value: use the legacy key below
+    }
+  }
+  const legacy = Deno.env.get(kind === 'publishable' ? 'SUPABASE_ANON_KEY' : 'SUPABASE_SERVICE_ROLE_KEY');
+  if (!legacy) throw new Error(`No ${kind} API key is available to this function`);
+  return legacy;
+}
+
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), {
     status,
@@ -20,7 +40,8 @@ Deno.serve(async (req) => {
   const url = Deno.env.get('SUPABASE_URL')!;
 
   // 1. Check the caller is an Administrator (is_admin() runs as the caller)
-  const callerClient = createClient(url, Deno.env.get('SUPABASE_ANON_KEY')!, {
+  // The caller's own session JWT (verify_jwt stays on) decides what this client may do
+  const callerClient = createClient(url, apiKey('publishable'), {
     global: { headers: { Authorization: req.headers.get('Authorization') ?? '' } },
   });
   const { data: isAdmin, error: roleError } = await callerClient.rpc('is_admin');
@@ -37,8 +58,10 @@ Deno.serve(async (req) => {
     );
   }
 
-  // 3. Create the user with the service role key (only available on the server)
-  const admin = createClient(url, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
+  // 3. Create the user with the secret key (only available on the server)
+  const admin = createClient(url, apiKey('secret'), {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
   const { data, error } = await admin.auth.admin.createUser({
     email,
     password,
