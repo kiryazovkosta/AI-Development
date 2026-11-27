@@ -11,6 +11,9 @@ import { SupabaseService } from './supabase.service';
 
 const FALLBACK_CATALOG_URL = 'assets/coins/catalog.json';
 
+/** Images uploaded from the admin form live in Supabase Storage and have absolute URLs */
+const isRemote = (path: string): boolean => /^https?:\/\//i.test(path);
+
 interface SeriesRow {
   series_no: number;
   years: string;
@@ -32,6 +35,9 @@ interface DesignRow {
  * Coin descriptions and every national-side series per country and denomination.
  * Reads the coin_designs / coin_series / coin_issuers tables and falls back to the
  * bundled catalog.json until the migration has been applied (or if Supabase is down).
+ *
+ * Series added from the admin form point at Supabase Storage. Once scripts/sync-coin-images.mjs
+ * has copied them into the bundle, the bundled file is used instead, so they also show offline.
  */
 @Injectable({
   providedIn: 'root',
@@ -85,23 +91,33 @@ export class CoinCatalogService {
     this.selectedSignal.set(null);
   }
 
+  /** Loads the catalog again, e.g. after an administrator added a series */
+  reload(): Promise<void> {
+    return this.load();
+  }
+
   private async load(): Promise<void> {
+    const bundled = this.loadBundled();
     try {
       const catalog = await this.loadFromSupabase();
       if (catalog) {
-        this.catalog.set(catalog);
+        this.catalog.set(preferBundledImages(catalog, await bundled.catch(() => null)));
         return;
       }
     } catch (error) {
       console.warn('Coin catalog unavailable in Supabase, using the bundled copy:', error);
     }
     try {
-      const response = await fetch(FALLBACK_CATALOG_URL);
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      this.catalog.set((await response.json()) as CoinCatalog);
+      this.catalog.set(await bundled);
     } catch (error) {
       console.error('Failed to load the coin catalog:', error);
     }
+  }
+
+  private async loadBundled(): Promise<CoinCatalog> {
+    const response = await fetch(FALLBACK_CATALOG_URL);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return (await response.json()) as CoinCatalog;
   }
 
   private async loadFromSupabase(): Promise<CoinCatalog | null> {
@@ -140,4 +156,27 @@ export class CoinCatalogService {
       })),
     };
   }
+}
+
+/** Swaps Storage URLs for the bundled copies of the same series, where the bundle has them */
+export function preferBundledImages(catalog: CoinCatalog, bundled: CoinCatalog | null): CoinCatalog {
+  if (!bundled) return catalog;
+  const local = new Map<string, CoinSeries>();
+  for (const coin of bundled.coins) {
+    for (const s of coin.series) {
+      if (!isRemote(s.image)) local.set(`${coin.countryCode}-${coin.denomination}@${s.seriesNo}`, s);
+    }
+  }
+  return {
+    ...catalog,
+    coins: catalog.coins.map((coin) => ({
+      ...coin,
+      series: coin.series.map((s) => {
+        const copy = isRemote(s.image)
+          ? local.get(`${coin.countryCode}-${coin.denomination}@${s.seriesNo}`)
+          : undefined;
+        return copy ? { ...s, image: copy.image, thumb: copy.thumb } : s;
+      }),
+    })),
+  };
 }

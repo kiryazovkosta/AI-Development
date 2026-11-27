@@ -7,10 +7,11 @@
     "build": "node scripts/build.mjs",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "cap:sync": "npm run build && cap sync",
-    "android": "npm run build && cap sync android && cap open android",
-    "ios": "npm run build && cap sync ios && cap open ios",
-    "ios:device": "npm run build && cap sync ios && bash scripts/ios-device.sh",
+    "coins:sync": "node scripts/sync-coin-images.mjs",
+    "cap:sync": "npm run coins:sync && npm run build && cap sync",
+    "android": "npm run coins:sync && npm run build && cap sync android && cap open android",
+    "ios": "npm run coins:sync && npm run build && cap sync ios && cap open ios",
+    "ios:device": "npm run coins:sync && npm run build && cap sync ios && bash scripts/ios-device.sh",
     "cap:assets": "capacitor-assets generate --android --ios --iconBackgroundColor \"#1a5f7a\" --iconBackgroundColorDark \"#1a5f7a\" --splashBackgroundColor \"#1a5f7a\" --splashBackgroundColorDark \"#1a5f7a\""
   },
   "prettier": {

@@ -51,6 +51,14 @@ Coin pictures and texts come from the European Central Bank's euro coin pages.
 
 ---
 
+## Adding coins (administrators)
+
+- Administrators find **Admin → Add Coin** in the menu (`/coins/new`). On phones and in the mobile app the admin pages are plain items under an "Admin" heading in the drawer.
+- The form adds a new national-side series to a country's coin: country, denomination, first year, years shown, design and a picture. It can also end the previous series the year before.
+- The picture is resized in the browser to 540 px (plus a 160 px thumbnail) and uploaded to the public Supabase Storage bucket `coin-images`, so the web site and the mobile app show it right away, without a new deploy or app build.
+- Only administrators can write: the bucket and `coin_series` accept uploads and changes only when `public.is_admin()` is true, checked by Supabase. Run `supabase/migrations/20261127120000_admin_coin_images.sql` once before using the form.
+- Offline copies: `npm run coins:sync` downloads coins added online into `public/assets/coins` and `catalog.json`, so they also show without internet. The app then prefers the bundled file. `cap:sync`, `android` and `ios` run it first. It needs `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` in the environment (never commit the service role key); without them it skips with a warning. Commit the downloaded files afterwards so the web build has them too. `scripts/build-coin-catalog.py` rewrites `catalog.json` from the ECB export, so run `coins:sync` again after it.
+
 ## €2 commemorative coins
 
 - Signed-in users get a "Commemoratives" menu item (`/commemoratives`): every commemorative coin grouped by year, newest first, with a year picker, overall and per-year progress, an owned checkbox on each coin and a details dialog.
