@@ -61,6 +61,7 @@ describe('MenuComponent', () => {
         provideRouter([
           { path: 'collection', component: BlankPage },
           { path: 'users/new', component: BlankPage },
+          { path: 'coins/new', component: BlankPage },
         ]),
         ...device.providers(),
         {
@@ -97,13 +98,54 @@ describe('MenuComponent', () => {
     expect(items('.drawer-nav')).toEqual(['Home', 'Commemoratives', 'Sign Out']);
   });
 
-  it('shows Create User to administrators and Face ID where it is available', async () => {
+  it('shows the admin pages to administrators and Face ID where it is available', async () => {
     isAdmin.set(true);
     toggleLabel.set('Face ID');
     await fixture.whenStable();
-    const all = ['Home', 'Commemoratives', 'Create User', 'Turn On Face ID', 'Sign Out'];
-    expect(items('.bar-nav')).toEqual(all);
-    expect(items('.drawer-nav')).toEqual(all);
+    expect(items('.bar-nav')).toEqual([
+      'Home',
+      'Commemoratives',
+      'Admin',
+      'Turn On Face ID',
+      'Sign Out',
+    ]);
+    // The drawer has no nested menu: the admin pages are plain items under a heading
+    expect(items('.drawer-nav')).toEqual([
+      'Home',
+      'Commemoratives',
+      'Add Coin',
+      'Create User',
+      'Turn On Face ID',
+      'Sign Out',
+    ]);
+    expect(drawer().querySelector('.menu-section')?.textContent?.trim()).toBe('Admin');
+  });
+
+  it('opens the Admin dropdown in the bar and closes it after a page is chosen', async () => {
+    isAdmin.set(true);
+    await fixture.whenStable();
+    const toggle = root().querySelector<HTMLElement>('.admin-toggle')!;
+    expect(toggle.getAttribute('aria-expanded')).toBe('false');
+    toggle.click();
+    await fixture.whenStable();
+    expect(toggle.getAttribute('aria-expanded')).toBe('true');
+    expect(items('.admin-list')).toEqual(['Add Coin', 'Create User']);
+
+    root().querySelector<HTMLElement>('.admin-list .menu-item')!.click();
+    await fixture.whenStable();
+    expect(TestBed.inject(Router).url).toBe('/coins/new');
+    expect(root().querySelector('.admin-list')).toBeNull();
+    expect(toggle.classList).toContain('active');
+  });
+
+  it('closes the Admin dropdown on a click outside it', async () => {
+    isAdmin.set(true);
+    await fixture.whenStable();
+    root().querySelector<HTMLElement>('.admin-toggle')!.click();
+    await fixture.whenStable();
+    document.body.click();
+    await fixture.whenStable();
+    expect(root().querySelector('.admin-list')).toBeNull();
   });
 
   for (const isNative of [true, false]) {
