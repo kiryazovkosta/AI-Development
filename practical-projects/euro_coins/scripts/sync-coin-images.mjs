@@ -7,10 +7,12 @@
 //     public/assets/coins/<iso>/<denom>/s<n>.<ext> and s<n>-thumb.<ext>, and the catalog points there.
 // The rows in Supabase keep their Storage URLs; the app prefers the bundled copy when it has one.
 //
-// Needs SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY (Project Settings -> API), either in the
+// Needs SUPABASE_URL and SUPABASE_SECRET_KEY (Project Settings -> API Keys: a secret key,
+// sb_secret_...; the legacy service_role key also works, as SUPABASE_SECRET_KEY or under its old
+// name SUPABASE_SERVICE_ROLE_KEY), either in the
 // environment or in a .env file next to package.json (copy .env.example; .env is git-ignored).
 // Values already set in the environment win over the file.
-// The service role key bypasses row level security: keep it out of git and out of the app.
+// A secret key bypasses row level security: keep it out of git and out of the app.
 // Without them the script prints a warning and leaves everything as it is, so builds still work.
 //
 // Run: npm run coins:sync   (the cap:sync, android and ios scripts run it first)
@@ -30,11 +32,11 @@ try {
 }
 
 const url = process.env.SUPABASE_URL?.replace(/\/+$/, '');
-const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const key = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!url || !key) {
   console.warn(
-    'coins:sync skipped: set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY (in .env, see .env.example)' +
+    'coins:sync skipped: set SUPABASE_URL and SUPABASE_SECRET_KEY (in .env, see .env.example)' +
       ' to bundle coins added online.'
   );
   process.exit(0);
@@ -45,7 +47,9 @@ const isRemote = (p) => /^https?:\/\//i.test(p);
 async function fetchRows() {
   const columns = 'country_code,denomination,series_no,years,start_year,design,image_path,thumb_path';
   const response = await fetch(`${url}/rest/v1/coin_series?select=${columns}`, {
-    headers: { apikey: key, Authorization: `Bearer ${key}` },
+    // New sb_secret_ keys are not JWTs and go only in the apikey header;
+    // legacy service_role keys are JWTs and also need the Authorization header
+    headers: key.startsWith('eyJ') ? { apikey: key, Authorization: `Bearer ${key}` } : { apikey: key },
   });
   if (!response.ok) {
     throw new Error(`Reading coin_series failed: HTTP ${response.status} ${await response.text()}`);
