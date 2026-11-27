@@ -53,3 +53,5 @@ Thumbs.db
 .vercel
 CLAUDE.md
 .env*
+# Template with placeholders only; the real .env stays ignored
+!.env.example

@@ -7,7 +7,9 @@
 //     public/assets/coins/<iso>/<denom>/s<n>.<ext> and s<n>-thumb.<ext>, and the catalog points there.
 // The rows in Supabase keep their Storage URLs; the app prefers the bundled copy when it has one.
 //
-// Needs SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY (Project Settings -> API) in the environment.
+// Needs SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY (Project Settings -> API), either in the
+// environment or in a .env file next to package.json (copy .env.example; .env is git-ignored).
+// Values already set in the environment win over the file.
 // The service role key bypasses row level security: keep it out of git and out of the app.
 // Without them the script prints a warning and leaves everything as it is, so builds still work.
 //
@@ -21,12 +23,19 @@ const projectDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '.
 const publicDir = path.join(projectDir, 'public');
 const catalogFile = path.join(publicDir, 'assets/coins/catalog.json');
 
+try {
+  process.loadEnvFile(path.join(projectDir, '.env'));
+} catch (error) {
+  if (error.code !== 'ENOENT') throw error;
+}
+
 const url = process.env.SUPABASE_URL?.replace(/\/+$/, '');
 const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!url || !key) {
   console.warn(
-    'coins:sync skipped: set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY to bundle coins added online.'
+    'coins:sync skipped: set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY (in .env, see .env.example)' +
+      ' to bundle coins added online.'
   );
   process.exit(0);
 }
