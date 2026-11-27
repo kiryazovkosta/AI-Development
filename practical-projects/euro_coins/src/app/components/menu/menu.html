@@ -2,7 +2,7 @@
   <div class="menu-bar">
     <span class="user-name">{{ authService.displayName() ?? authService.currentUser()?.email }}</span>
     <nav class="bar-nav" aria-label="Main menu">
-      <ng-container [ngTemplateOutlet]="items" />
+      <ng-container [ngTemplateOutlet]="items" [ngTemplateOutletContext]="{ $implicit: 'bar' }" />
     </nav>
   </div>
 
@@ -30,7 +30,7 @@
         </button>
       </div>
       <nav class="drawer-nav" aria-label="Main menu">
-        <ng-container [ngTemplateOutlet]="items" />
+        <ng-container [ngTemplateOutlet]="items" [ngTemplateOutletContext]="{ $implicit: 'drawer' }" />
       </nav>
       @if (buildInfo; as build) {
         <p class="build-info">
@@ -41,11 +41,39 @@
   </dialog>
 }
 
-<ng-template #items>
+<!-- place: 'bar' (wide screens) or 'drawer' (phones and the mobile app) -->
+<ng-template #items let-place>
   <a class="menu-item" routerLink="/collection" routerLinkActive="active" ariaCurrentWhenActive="page">Home</a>
   <a class="menu-item" routerLink="/commemoratives" routerLinkActive="active" ariaCurrentWhenActive="page">Commemoratives</a>
   @if (authService.isAdmin()) {
-    <a class="menu-item" routerLink="/users/new" routerLinkActive="active" ariaCurrentWhenActive="page">Create User</a>
+    @if (place === 'bar') {
+      <!-- Wide screens: the admin pages sit in one dropdown -->
+      <div class="admin-menu" (focusout)="onAdminFocusOut($event)">
+        <button
+          type="button"
+          class="menu-item admin-toggle"
+          [class.active]="adminRouteActive()"
+          aria-haspopup="true"
+          aria-controls="admin-menu-list"
+          [attr.aria-expanded]="adminMenuOpen()"
+          (click)="adminMenuOpen.set(!adminMenuOpen())"
+          (keydown.escape)="adminMenuOpen.set(false)">
+          Admin
+          <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        @if (adminMenuOpen()) {
+          <div class="admin-list" id="admin-menu-list" (keydown.escape)="closeAdminMenu(true)">
+            <ng-container [ngTemplateOutlet]="adminItems" />
+          </div>
+        }
+      </div>
+    } @else {
+      <!-- Drawer: no nested menus, just a labelled group of plain items -->
+      <p class="menu-section" id="drawer-admin-label">Admin</p>
+      <div class="drawer-group" role="group" aria-labelledby="drawer-admin-label">
+        <ng-container [ngTemplateOutlet]="adminItems" />
+      </div>
+    }
   }
   @if (biometricLogin.toggleLabel(); as name) {
     <button type="button" class="menu-item" [disabled]="togglingFaceId()" (click)="onToggleFaceId()">
@@ -55,4 +83,9 @@
   <button type="button" class="menu-item sign-out" [disabled]="signingOut()" (click)="onLogout()">
     Sign Out
   </button>
+</ng-template>
+
+<ng-template #adminItems>
+  <a class="menu-item" routerLink="/coins/new" routerLinkActive="active" ariaCurrentWhenActive="page">Add Coin</a>
+  <a class="menu-item" routerLink="/users/new" routerLinkActive="active" ariaCurrentWhenActive="page">Create User</a>
 </ng-template>

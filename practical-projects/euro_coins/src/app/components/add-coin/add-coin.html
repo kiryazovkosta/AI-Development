@@ -1,0 +1,181 @@
+<div class="auth-container">
+  <div class="auth-card add-coin-card">
+    <h1>Add Coin</h1>
+    <p class="auth-subtitle">Add a new national-side series to a country's coin</p>
+
+    @if (successMessage(); as message) {
+      <div class="success-message" role="status">
+        {{ message }} <a routerLink="/collection">View the collection</a>
+      </div>
+    }
+    @if (serverError(); as message) {
+      <div class="error-message" role="alert">{{ message }}</div>
+    }
+    @if (!catalogReady()) {
+      <p class="hint">Loading the coin catalog…</p>
+    }
+
+    <form [formRoot]="addCoinForm">
+      <div class="form-row">
+        <div class="form-group" [class.has-error]="hasErrors(addCoinForm.countryCode)">
+          <label for="countryCode">Country</label>
+          <select
+            id="countryCode"
+            [formField]="addCoinForm.countryCode"
+            [attr.aria-invalid]="hasErrors(addCoinForm.countryCode)"
+            aria-describedby="countryCode-errors">
+            <option value="" disabled>Choose…</option>
+            @for (country of coinData.countries(); track country.code) {
+              <option [value]="country.code">{{ country.name }}</option>
+            }
+          </select>
+          <ul class="field-errors" id="countryCode-errors" aria-live="polite">
+            @for (message of errorsOf(addCoinForm.countryCode); track message) {
+              <li>{{ message }}</li>
+            }
+          </ul>
+        </div>
+
+        <div class="form-group" [class.has-error]="hasErrors(addCoinForm.denomination)">
+          <label for="denomination">Denomination</label>
+          <select
+            id="denomination"
+            [formField]="addCoinForm.denomination"
+            [attr.aria-invalid]="hasErrors(addCoinForm.denomination)"
+            aria-describedby="denomination-errors">
+            <option value="" disabled>Choose…</option>
+            @for (denomination of coinData.denominations(); track denomination.value) {
+              <option [value]="denomination.value">{{ denomination.label }}</option>
+            }
+          </select>
+          <ul class="field-errors" id="denomination-errors" aria-live="polite">
+            @for (message of errorsOf(addCoinForm.denomination); track message) {
+              <li>{{ message }}</li>
+            }
+          </ul>
+        </div>
+      </div>
+
+      @if (existingCoin(); as coin) {
+        <div class="series-info">
+          <p>
+            This will be <strong>series {{ nextSeriesNo() }}</strong>.
+            @if (previousSeries(); as previous) {
+              Current: series {{ previous.seriesNo }}, {{ previous.years }}, “{{ previous.design }}”.
+            }
+          </p>
+          @if (previousSeries(); as previous) {
+            <label class="checkbox">
+              <input type="checkbox" [formField]="addCoinForm.closePrevious" />
+              <span>
+                End series {{ previous.seriesNo }} the year before
+                @if (previousSeriesYears(); as years) {
+                  (becomes “{{ years }}”)
+                }
+              </span>
+            </label>
+          }
+        </div>
+      }
+
+      <div class="form-row">
+        <div class="form-group" [class.has-error]="hasErrors(addCoinForm.startYear)">
+          <label for="startYear">First year</label>
+          <input
+            id="startYear"
+            type="number"
+            inputmode="numeric"
+            [formField]="addCoinForm.startYear"
+            [attr.aria-invalid]="hasErrors(addCoinForm.startYear)"
+            aria-describedby="startYear-errors" />
+          <ul class="field-errors" id="startYear-errors" aria-live="polite">
+            @for (message of errorsOf(addCoinForm.startYear); track message) {
+              <li>{{ message }}</li>
+            }
+          </ul>
+        </div>
+
+        <div class="form-group" [class.has-error]="hasErrors(addCoinForm.years)">
+          <label for="years">Years shown <span class="optional">(optional)</span></label>
+          <input
+            id="years"
+            type="text"
+            [placeholder]="yearsPlaceholder()"
+            [formField]="addCoinForm.years"
+            [attr.aria-invalid]="hasErrors(addCoinForm.years)"
+            aria-describedby="years-errors" />
+          <ul class="field-errors" id="years-errors" aria-live="polite">
+            @for (message of errorsOf(addCoinForm.years); track message) {
+              <li>{{ message }}</li>
+            }
+          </ul>
+        </div>
+      </div>
+
+      <div class="form-group" [class.has-error]="hasErrors(addCoinForm.design)">
+        <label for="design">Design</label>
+        <textarea
+          id="design"
+          rows="3"
+          placeholder="e.g. Prince Albert II, frontal portrait"
+          [formField]="addCoinForm.design"
+          [attr.aria-invalid]="hasErrors(addCoinForm.design)"
+          aria-describedby="design-errors"></textarea>
+        <ul class="field-errors" id="design-errors" aria-live="polite">
+          @for (message of errorsOf(addCoinForm.design); track message) {
+            <li>{{ message }}</li>
+          }
+        </ul>
+      </div>
+
+      <div class="form-group" [class.has-error]="hasErrors(addCoinForm.image)">
+        <label for="image">Picture</label>
+        <div class="image-picker">
+          <div class="image-preview" aria-hidden="true">
+            @if (imagePreview(); as url) {
+              <img [src]="url" alt="" width="96" height="96" />
+            } @else {
+              <svg viewBox="0 0 24 24" width="32" height="32"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M9 12h6M12 9v6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            }
+          </div>
+          <div class="image-input">
+            <input
+              #imageInput
+              id="image"
+              type="file"
+              accept="image/*"
+              [disabled]="addCoinForm().submitting()"
+              (change)="onImageSelected($event)"
+              (blur)="addCoinForm.image().markAsTouched()"
+              [attr.aria-invalid]="hasErrors(addCoinForm.image)"
+              aria-describedby="image-hint image-errors" />
+            <p class="hint" id="image-hint">
+              Front side, ideally square. It is resized to 540 px and stored online, so the web site
+              and the mobile app show it right away.
+            </p>
+          </div>
+        </div>
+        <ul class="field-errors" id="image-errors" aria-live="polite">
+          @for (message of errorsOf(addCoinForm.image); track message) {
+            <li>{{ message }}</li>
+          }
+        </ul>
+      </div>
+
+      <button
+        type="submit"
+        class="btn-primary"
+        [disabled]="addCoinForm().submitting() || !catalogReady()">
+        @if (addCoinForm().submitting()) {
+          Saving…
+        } @else {
+          Add Coin
+        }
+      </button>
+    </form>
+
+    <p class="auth-link">
+      <a routerLink="/collection">← Back to collection</a>
+    </p>
+  </div>
+</div>

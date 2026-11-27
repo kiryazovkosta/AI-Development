@@ -16,6 +16,11 @@ export const routes: Routes = [
     canActivate: [authGuard, adminGuard],
   },
   {
+    path: 'coins/new',
+    loadComponent: () => import('./components/add-coin/add-coin').then((m) => m.AddCoinComponent),
+    canActivate: [authGuard, adminGuard],
+  },
+  {
     path: 'collection',
     loadComponent: () =>
       import('./components/collection-page/collection-page').then((m) => m.CollectionPageComponent),
